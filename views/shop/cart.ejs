@@ -1,0 +1,103 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/cart.css">
+    </head>
+
+    <body>
+        <%- include('../includes/navigation.ejs') %>
+
+            <main class="container mt-4">
+                <div class="cart-container">
+                    <div class="cart-header">
+                        <h1 class="text-primary">
+                            <i class="fas fa-shopping-cart"></i> Giỏ hàng của bạn
+                        </h1>
+                    </div>
+
+                    <% if (products && products.length> 0) { %>
+                        <div class="cart-items">
+                            <% products.forEach(product=> { %>
+                                <div class="cart-item card mb-3">
+                                    <div class="row g-0">
+                                        <div class="col-md-2">
+                                            <img src="<%= product.imageUrl %>" class="img-fluid rounded-start"
+                                                alt="<%= product.title %>">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <%= product.title %>
+                                                </h5>
+                                                <p class="card-text">
+                                                    <span class="text-muted">Đơn giá:</span>
+                                                    <span class="price">
+                                                        <%= product.price.toLocaleString('vi-VN') %> VNĐ
+                                                    </span>
+                                                </p>
+                                                <p class="card-text">
+                                                    <span class="text-muted">Số lượng:</span>
+                                                    <form action="/cart-update-quantity" method="POST" class="d-inline">
+                                                        <input type="hidden" name="productId" value="<%= product._id %>">
+                                                        <div class="input-group" style="width: 150px;">
+                                                            <input type="number" name="quantity" class="form-control form-control-sm" 
+                                                                value="<%= product.quantity %>" min="1" max="<%= product.stockQuantity || 10 %>"
+                                                                onchange="this.form.submit()">
+                                                            <span class="input-group-text bg-light">
+                                                                <small class="text-muted">
+                                                                    <%= product.stockQuantity ? `Còn ${product.stockQuantity} sp` : '' %>
+                                                                </small>
+                                                            </span>
+                                                        </div>
+                                                    </form>
+                                                </p>
+                                                <p class="card-text">
+                                                    <span class="text-muted">Thành tiền:</span>
+                                                    <span class="subtotal">
+                                                        <%= (product.price * product.quantity).toLocaleString('vi-VN')
+                                                            %> VNĐ
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                            <form action="/cart-delete-item" method="POST">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                                <button class="btn btn-danger" type="submit">
+                                                    <i class="fas fa-trash"></i> Xóa
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }) %>
+                        </div>
+
+                        <div class="cart-summary card mt-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h3 class="mb-0">Tổng tiền:</h3>
+                                    <h3 class="text-primary mb-0">
+                                        <%= totalPrice.toLocaleString('vi-VN') %> VNĐ
+                                    </h3>
+                                </div>
+                                <div class="d-grid gap-2 mt-3">
+                                        <!-- Chuyển hướng sang trang checkout -->
+                            <a href="/checkout" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-check-circle"></i> Tiến hành đặt hàng
+                            </a>
+                                </div>
+                            </div>
+                        </div>
+                        <% } else { %>
+                            <div class="empty-cart text-center py-5">
+                                <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+                                <h2>Giỏ hàng trống</h2>
+                                <p class="text-muted">Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
+                                <a href="/products" class="btn btn-primary btn-lg mt-3">
+                                    <i class="fas fa-shopping-bag"></i> Tiếp tục mua sắm
+                                </a>
+                            </div>
+                            <% } %>
+                </div>
+            </main>
+
+            <%- include('../includes/end.ejs') %>

@@ -1,0 +1,99 @@
+.payment-method {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #e9ecef;
+}
+
+.payment-method:hover {
+  border-color: #007bff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.payment-method input[type="radio"]:checked + label {
+  color: #007bff;
+}
+
+.payment-method input[type="radio"]:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.payment-method .card-body {
+  padding: 1.5rem;
+}
+
+.payment-method i {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.payment-method h6 {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.payment-method small {
+  font-size: 0.875rem;
+}
+
+.payment-detail {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Radio button styling */
+.form-check-input {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+}
+
+.form-check-label {
+  cursor: pointer;
+  display: block;
+  padding-top: 30px;
+}
+
+/* Alert styling */
+.alert {
+  border-radius: 8px;
+  border: none;
+}
+
+.alert-info {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.alert-warning {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .payment-method .col-md-6 {
+    margin-bottom: 1rem;
+  }
+  
+  .payment-method .card-body {
+    padding: 1rem;
+  }
+  
+  .payment-method i {
+    font-size: 1.5rem !important;
+  }
+}

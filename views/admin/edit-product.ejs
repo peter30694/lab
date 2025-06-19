@@ -1,0 +1,236 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/product.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e3e6f0;
+            padding-bottom: 1rem;
+        }
+
+        .admin-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #4e73df;
+            margin: 0;
+        }
+
+        .product-form-card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 2.5rem;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #5a5c69;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #5a5c69;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            padding: 0.65rem 1rem;
+            border: 1px solid #d1d3e2;
+            border-radius: 0.35rem;
+            font-size: 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e3e6f0;
+        }
+
+        .btn {
+            padding: 0.65rem 1.2rem;
+            border-radius: 0.35rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            color: white;
+            border: 1px solid #4e73df;
+        }
+
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+
+        .btn-secondary {
+            background-color: #858796;
+            color: white;
+            border: 1px solid #858796;
+        }
+
+        .btn-secondary:hover {
+            background-color: #717384;
+            border-color: #676978;
+        }
+
+        .form-text {
+            font-size: 0.8rem;
+            color: #858796;
+            margin-top: 0.3rem;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 0.35rem;
+            margin-top: 1rem;
+            box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.1);
+        }
+
+        .stock-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .stock-badge {
+            font-size: 0.9rem;
+            padding: 0.35rem 0.75rem;
+        }
+    </style>
+    </head>
+
+    <body>
+        <%- include('../includes/navigation.ejs') %>
+
+        <main>
+            <div class="admin-container">
+                <div class="admin-header">
+                    <h1 class="admin-title">Chỉnh sửa sản phẩm</h1>
+                    <a href="/admin/products" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+
+                <div class="card product-form-card">
+                    <div class="card-body">
+                        <form action="/admin/edit-product" method="POST" enctype="multipart/form-data">
+                            <div class="row gx-4">
+                                <div class="col-lg-6">
+                                    <div class="form-section-title">Thông tin cơ bản</div>
+                                    <div class="mb-3">
+                                        <label for="title" class="form-label">Tên sản phẩm</label>
+                                        <input type="text" class="form-control" id="title" name="title" 
+                                            value="<%= product.title %>" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Hình ảnh sản phẩm</label>
+                                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                        <div class="form-text">Chỉ chấp nhận file ảnh (JPEG, PNG, JPG) tối đa 5MB</div>
+                                        <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="image-preview">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="price" class="form-label">Giá</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₫</span>
+                                            <input type="number" class="form-control" id="price" name="price" 
+                                                value="<%= product.price %>" step="0.01" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="stockQuantity" class="form-label">Số lượng tồn kho</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="stockQuantity" name="stockQuantity" 
+                                                value="<%= product.stockQuantity || 0 %>" min="0" required>
+                                            <span class="input-group-text">
+                                                <i class="fas fa-box"></i>
+                                            </span>
+                                        </div>
+                                        <div class="stock-info">
+                                            <span class="badge <%= product.stockQuantity > 0 ? 'bg-success' : 'bg-danger' %> stock-badge">
+                                                <%= product.stockQuantity > 0 ? 'Còn hàng' : 'Hết hàng' %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-section-title">Thông tin bổ sung</div>
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Mô tả sản phẩm</label>
+                                        <textarea class="form-control" id="description" name="description" rows="6" required><%= product.description %></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="category" class="form-label">Danh mục sản phẩm</label>
+                                        <select class="form-select" id="category" name="category">
+                                            <option value="" disabled>-- Chọn danh mục --</option>
+                                            <option value="pets" <%= product.category === 'pets' ? 'selected' : '' %>>Thú cưng</option>
+                                            <option value="birds" <%= product.category === 'birds' ? 'selected' : '' %>>Chim cảnh</option>
+                                            <option value="fish" <%= product.category === 'fish' ? 'selected' : '' %>>Cá cảnh</option>
+                                            <option value="reptiles" <%= product.category === 'reptiles' ? 'selected' : '' %>>Bò sát</option>
+                                            <option value="plants" <%= product.category === 'plants' ? 'selected' : '' %>>Cây cảnh</option>
+                                            <option value="flowers" <%= product.category === 'flowers' ? 'selected' : '' %>>Hoa</option>
+                                            <option value="accessories" <%= product.category === 'accessories' ? 'selected' : '' %>>Phụ kiện</option>
+                                            <option value="food" <%= product.category === 'food' ? 'selected' : '' %>>Thức ăn</option>
+                                            <option value="other" <%= product.category === 'other' ? 'selected' : '' %>>Khác</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="productId" value="<%= product._id %>">
+                            <div class="form-actions">
+                                <a href="/admin/products" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Hủy bỏ
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Lưu thay đổi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <%- include('../includes/end.ejs') %>

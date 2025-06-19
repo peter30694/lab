@@ -1,0 +1,195 @@
+<%- include('../includes/head.ejs') %>
+  <link rel="stylesheet" href="/css/payment.css">
+  </head>
+
+  <body>
+    <%- include('../includes/navigation.ejs') %>
+
+      <main class="container mt-5">
+        <div class="card p-4 shadow-sm">
+          <h2 class="text-primary mb-4">
+            <i class="fas fa-user-check"></i> Thông tin khách hàng
+          </h2>
+
+          <form action="/orders" method="POST">
+            <!-- Họ tên -->
+            <div class="mb-3">
+              <label for="name" class="form-label">Họ và tên</label>
+              <input type="text" class="form-control" id="name" name="name" required placeholder="Nguyễn Văn A">
+            </div>
+
+            <!-- Số điện thoại -->
+            <div class="mb-3">
+              <label for="phone" class="form-label">Số điện thoại</label>
+              <input type="text" class="form-control" id="phone" name="phone" required placeholder="0123456789">
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required placeholder="example@gmail.com">
+            </div>
+
+            <!-- Địa chỉ giao hàng -->
+            <div class="mb-3">
+              <label for="address" class="form-label">Địa chỉ giao hàng</label>
+              <textarea class="form-control" id="address" name="address" rows="3" required
+                placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành..."></textarea>
+            </div>
+
+            <!-- Phương thức thanh toán -->
+            <div class="mb-4">
+              <h5 class="text-primary mb-3">
+                <i class="fas fa-credit-card"></i> Phương thức thanh toán
+              </h5>
+
+              <div class="row">
+                <!-- Thanh toán khi nhận hàng -->
+                <div class="col-md-6 mb-3">
+                  <div class="card payment-method">
+                    <div class="card-body text-center">
+                      <input type="radio" class="form-check-input" id="cod" name="paymentMethod" value="cod" checked>
+                      <label class="form-check-label w-100" for="cod">
+                        <i class="fas fa-truck fa-2x text-success mb-2"></i>
+                        <h6>Thanh toán khi nhận hàng (COD)</h6>
+                        <small class="text-muted">Thanh toán bằng tiền mặt khi nhận hàng</small>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Chuyển khoản ngân hàng -->
+                <div class="col-md-6 mb-3">
+                  <div class="card payment-method">
+                    <div class="card-body text-center">
+                      <input type="radio" class="form-check-input" id="bank" name="paymentMethod" value="bank">
+                      <label class="form-check-label w-100" for="bank">
+                        <i class="fas fa-university fa-2x text-primary mb-2"></i>
+                        <h6>Chuyển khoản ngân hàng</h6>
+                        <small class="text-muted">Chuyển khoản trước khi giao hàng</small>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- MoMo -->
+                <div class="col-md-6 mb-3">
+                  <div class="card payment-method">
+                    <div class="card-body text-center">
+                      <input type="radio" class="form-check-input" id="momo" name="paymentMethod" value="momo">
+                      <label class="form-check-label w-100" for="momo">
+                        <i class="fas fa-mobile-alt fa-2x text-danger mb-2"></i>
+                        <h6>Ví MoMo</h6>
+                        <small class="text-muted">Thanh toán qua ví điện tử MoMo</small>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- VNPay -->
+                <div class="col-md-6 mb-3">
+                  <div class="card payment-method">
+                    <div class="card-body text-center">
+                      <input type="radio" class="form-check-input" id="vnpay" name="paymentMethod" value="vnpay">
+                      <label class="form-check-label w-100" for="vnpay">
+                        <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
+                        <h6>VNPay</h6>
+                        <small class="text-muted">Thanh toán qua VNPay</small>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ví điện tử khác -->
+                <div class="col-md-6 mb-3">
+                  <div class="card payment-method">
+                    <div class="card-body text-center">
+                      <input type="radio" class="form-check-input" id="ewallet" name="paymentMethod" value="ewallet">
+                      <label class="form-check-label w-100" for="ewallet">
+                        <i class="fas fa-mobile-alt fa-2x text-warning mb-2"></i>
+                        <h6>Ví điện tử khác</h6>
+                        <small class="text-muted">ZaloPay, ViettelPay</small>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Thẻ tín dụng -->
+                <div class="col-md-6 mb-3">
+                  <div class="card payment-method">
+                    <div class="card-body text-center">
+                      <input type="radio" class="form-check-input" id="credit" name="paymentMethod" value="credit">
+                      <label class="form-check-label w-100" for="credit">
+                        <i class="fas fa-credit-card fa-2x text-info mb-2"></i>
+                        <h6>Thẻ tín dụng/ghi nợ</h6>
+                        <small class="text-muted">Visa, MasterCard, JCB</small>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Thông tin thanh toán chi tiết -->
+              <div id="payment-details" class="mt-3" style="display: none;">
+                <!-- Bank Transfer Details -->
+                <div id="bank-details" class="payment-detail" style="display: none;">
+                  <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle"></i> Thông tin chuyển khoản:</h6>
+                    <p class="mb-1"><strong>Ngân hàng:</strong> Vietinbank</p>
+                    <p class="mb-1"><strong>Số tài khoản:</strong> 104867904744</p>
+                    <p class="mb-1"><strong>Chủ tài khoản:</strong> LE HONG PHUONG</p>
+                    <p class="mb-0"><strong>Nội dung:</strong> [Họ tên] - [Số điện thoại]</p>
+                  </div>
+                </div>
+
+                <!-- MoMo Details -->
+                <div id="momo-details" class="payment-detail" style="display: none;">
+                  <div class="alert alert-danger">
+                    <h6><i class="fas fa-mobile-alt"></i> Thanh toán MoMo:</h6>
+                    <p class="mb-1"><i class="fas fa-info-circle"></i> Bạn sẽ được chuyển đến trang thanh toán MoMo</p>
+                    <p class="mb-1"><i class="fas fa-shield-alt"></i> Thanh toán an toàn và bảo mật</p>
+                    <p class="mb-0"><i class="fas fa-clock"></i> Xử lý thanh toán tức thì</p>
+                  </div>
+                </div>
+
+                <!-- VNPay Details -->
+                <div id="vnpay-details" class="payment-detail" style="display: none;">
+                  <div class="alert alert-primary">
+                    <h6><i class="fas fa-credit-card"></i> Thanh toán qua VNPay:</h6>
+                    <p class="mb-1"><i class="fas fa-info-circle"></i> Bạn sẽ được chuyển hướng đến cổng thanh toán VNPay</p>
+                    <p class="mb-1"><i class="fas fa-university"></i> Hỗ trợ thanh toán qua thẻ ATM, Internet Banking, QR Code</p>
+                    <p class="mb-1"><i class="fas fa-shield-alt"></i> Hỗ trợ hầu hết các ngân hàng tại Việt Nam</p>
+                    <p class="mb-0"><i class="fas fa-clock"></i> Giao dịch được xử lý nhanh chóng và an toàn</p>
+                  </div>
+                </div>
+
+                <!-- E-wallet Details -->
+                <div id="ewallet-details" class="payment-detail" style="display: none;">
+                  <div class="alert alert-warning">
+                    <h6><i class="fas fa-mobile-alt"></i> Thông tin ví điện tử khác:</h6>
+                    <p class="mb-1"><strong>ZaloPay:</strong> 0123456789</p>
+                    <p class="mb-1"><strong>ViettelPay:</strong> 0987654321</p>
+                    <p class="mb-0"><strong>Nội dung:</strong> [Họ tên] - [Số điện thoại]</p>
+                  </div>
+                </div>
+
+                <!-- Credit Card Details -->
+                <div id="credit-details" class="payment-detail" style="display: none;">
+                  <div class="alert alert-info">
+                    <h6><i class="fas fa-credit-card"></i> Thanh toán thẻ:</h6>
+                    <p class="mb-0">Bạn sẽ được chuyển đến trang thanh toán an toàn để nhập thông tin thẻ.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nút đặt hàng -->
+            <button type="submit" class="btn btn-success btn-lg">
+              <i class="fas fa-check-circle"></i> Xác nhận đặt hàng
+            </button>
+          </form>
+        </div>
+      </main>
+
+      <script src="/js/payment.js"></script>
+      <%- include('../includes/end.ejs') %>
