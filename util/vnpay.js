@@ -1,74 +1,80 @@
-const { VNPay } = require('vn-payments');
 const crypto = require('crypto');
+const querystring = require('querystring');
 
 class VNPayService {
     constructor() {
-        this.vnpay = new VNPay({
-            paymentGateway: process.env.VNPAY_GATEWAY || 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-            merchant: process.env.VNPAY_TMN_CODE || 'VNPAY01',
-            secureSecret: process.env.VNPAY_HASH_SECRET || 'RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ',
-            testMode: process.env.NODE_ENV !== 'production'
-        });
+        this.tmnCode = process.env.VNPAY_TMN_CODE;
+        this.secretKey = process.env.VNPAY_HASH_SECRET;
+        this.vnpUrl = process.env.VNPAY_GATEWAY_URL;
+        this.returnUrl = process.env.VNPAY_RETURN_URL;
+        
+        console.log('VNPay Config:');
+        console.log('TMN_CODE:', this.tmnCode);
+        console.log('HASH_SECRET:', this.secretKey ? '***' + this.secretKey.slice(-4) : 'MISSING');
+        console.log('GATEWAY_URL:', this.vnpUrl);
+        console.log('RETURN_URL:', this.returnUrl);
     }
 
-    /**
-     * Tạo URL thanh toán VNPay
-     * @param {Object} orderData - Thông tin đơn hàng
-     * @returns {Promise<string>} - URL thanh toán
-     */
-    async createPayment(orderData) {
+    createPayment(orderData, paymentMethod = null, bankCode = null) {
         try {
-            const {
-                orderId,
-                amount,
-                orderInfo,
-                returnUrl,
-                ipAddr
-            } = orderData;
+            const date = new Date();
+            const createDate = date.getFullYear().toString() +
+                (date.getMonth() + 1).toString().padStart(2, '0') +
+                date.getDate().toString().padStart(2, '0') +
+                date.getHours().toString().padStart(2, '0') +
+                date.getMinutes().toString().padStart(2, '0') +
+                date.getSeconds().toString().padStart(2, '0');
 
-            // Dữ liệu thanh toán
-            const checkoutData = {
-                amount: amount,
-                customerId: orderId,
-                currency: 'VND',
-                clientIp: ipAddr || '127.0.0.1',
-                billingCity: 'Ha Noi',
-                billingCountry: 'VN',
-                billingPostCode: '100000',
-                billingStateProvince: 'Ha Noi',
-                billingStreet: 'Thanh Xuan',
-                deliveryAddress: 'Thanh Xuan Ha Noi',
-                deliveryCity: 'Ha Noi',
-                deliveryCountry: 'VN',
-                deliveryProvince: 'Ha Noi',
-                orderDescription: orderInfo || `Thanh toan don hang ${orderId}`,
-                orderCategory: 'other',
-                returnUrl: returnUrl || process.env.VNPAY_RETURN_URL || 'http://localhost:5000/vnpay/return',
-                transactionId: orderId,
-                customFields: {
-                    orderId: orderId
-                }
+            const orderId = date.getHours().toString().padStart(2, '0') +
+                date.getMinutes().toString().padStart(2, '0') +
+                date.getSeconds().toString().padStart(2, '0');
+
+            let vnp_Params = {
+                'vnp_Version': '2.1.0',
+                'vnp_Command': 'pay',
+                'vnp_TmnCode': this.tmnCode,
+                'vnp_Locale': 'vn',
+                'vnp_CurrCode': 'VND',
+                'vnp_TxnRef': orderId,
+                'vnp_OrderInfo': orderData.orderInfo || 'Thanh toan don hang',
+                'vnp_OrderType': orderData.orderType || 'other',
+                'vnp_Amount': orderData.amount * 100,
+                'vnp_ReturnUrl': this.returnUrl,
+                'vnp_IpAddr': orderData.ipAddr || '127.0.0.1',
+                'vnp_CreateDate': createDate
             };
 
-            console.log('🔄 Tạo URL thanh toán VNPay:', {
-                orderId,
-                amount,
-                orderInfo
-            });
+            if (bankCode && bankCode !== '') {
+                vnp_Params['vnp_BankCode'] = bankCode;
+            }
 
-            // Tạo URL thanh toán
-            const paymentUrl = await this.vnpay.buildCheckoutUrl(checkoutData);
-            
-            console.log('✅ Tạo URL thanh toán VNPay thành công:', paymentUrl.href);
-            
+            if (paymentMethod && paymentMethod !== '') {
+                vnp_Params['vnp_CardType'] = paymentMethod;
+            }
+
+            vnp_Params = this.sortObject(vnp_Params);
+
+            const signData = Object.entries(vnp_Params)
+                .map(([key, val]) => `${key}=${val}`)
+                .join('&');
+
+            console.log('VNPay signData for payment:', signData);
+
+            const hmac = crypto.createHmac('sha512', this.secretKey);
+            const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+            console.log('VNPay generated signature:', signed);
+
+            vnp_Params['vnp_SecureHash'] = signed;
+
+            const paymentUrl = this.vnpUrl + '?' + querystring.stringify(vnp_Params);
+
             return {
                 success: true,
-                paymentUrl: paymentUrl.href,
+                paymentUrl: paymentUrl,
                 orderId: orderId
             };
-
         } catch (error) {
-            console.error('❌ Lỗi tạo thanh toán VNPay:', error);
+            console.error('VNPay payment creation error:', error);
             return {
                 success: false,
                 error: error.message
@@ -76,109 +82,42 @@ class VNPayService {
         }
     }
 
-    /**
-     * Xác thực callback từ VNPay
-     * @param {Object} query - Query parameters từ VNPay
-     * @returns {Promise<Object>} - Kết quả xác thực
-     */
-    async verifyReturn(query) {
+    verifyReturnUrl(vnpParams) {
         try {
-            console.log('🔄 Xác thực callback VNPay:', query);
-            
-            const results = await this.vnpay.verifyReturnUrl(query);
-            
-            console.log('✅ Kết quả xác thực VNPay:', results);
-            
-            return {
-                success: results.isSucceed,
-                orderId: results.orderId,
-                amount: results.amount,
-                message: results.message,
-                transactionStatus: results.isSucceed ? 'SUCCESS' : 'FAILED',
-                vnpayData: results
-            };
+            const secureHash = vnpParams['vnp_SecureHash'];
+            console.log('VNPay received signature:', secureHash);
 
+            delete vnpParams['vnp_SecureHash'];
+            delete vnpParams['vnp_SecureHashType'];
+
+            const sortedParams = this.sortObject(vnpParams);
+
+            const signData = Object.entries(sortedParams)
+                .map(([key, val]) => `${key}=${val}`)
+                .join('&');
+
+            console.log('VNPay signData for verification:', signData);
+
+            const hmac = crypto.createHmac('sha512', this.secretKey);
+            const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+            console.log('VNPay received signature:', secureHash); // Chữ ký mà VNPay gửi về
+            console.log('VNPay computed signature:', signed);
+            console.log('VNPay signature match:', secureHash === signed);
+
+            return secureHash === signed;
         } catch (error) {
-            console.error('❌ Lỗi xác thực VNPay:', error);
-            return {
-                success: false,
-                error: error.message
-            };
+            console.error('VNPay verification error:', error);
+            return false;
         }
     }
 
-    /**
-     * Xác thực IPN (Instant Payment Notification) từ VNPay
-     * @param {Object} query - Query parameters từ VNPay IPN
-     * @returns {Promise<Object>} - Kết quả xác thực
-     */
-    async verifyIPN(query) {
-        try {
-            console.log('🔄 Xác thực IPN VNPay:', query);
-            
-            const results = await this.vnpay.verifyReturnUrl(query);
-            
-            return {
-                success: results.isSucceed,
-                orderId: results.orderId,
-                amount: results.amount,
-                message: results.message,
-                transactionStatus: results.isSucceed ? 'SUCCESS' : 'FAILED'
-            };
-
-        } catch (error) {
-            console.error('❌ Lỗi xác thực IPN VNPay:', error);
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
-
-    /**
-     * Tạo secure hash cho VNPay
-     * @param {Object} params - Tham số cần hash
-     * @returns {string} - Secure hash
-     */
-    createSecureHash(params) {
-        const sortedParams = Object.keys(params)
-            .filter(key => key !== 'vnp_SecureHash' && params[key] !== '')
-            .sort()
-            .map(key => `${key}=${encodeURIComponent(params[key])}`)
-            .join('&');
-        
-        const secretKey = process.env.VNPAY_HASH_SECRET || 'RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ';
-        const hash = crypto.createHmac('sha512', secretKey)
-            .update(sortedParams)
-            .digest('hex');
-        
-        return hash;
-    }
-
-    /**
-     * Kiểm tra trạng thái thanh toán
-     * @param {string} orderId - Mã đơn hàng
-     * @returns {Object} - Thông tin trạng thái
-     */
-    async checkPaymentStatus(orderId) {
-        try {
-            // VNPay không có API query trực tiếp trong vn-payments
-            // Cần implement riêng nếu cần thiết
-            console.log('🔄 Kiểm tra trạng thái thanh toán VNPay:', orderId);
-            
-            return {
-                success: true,
-                orderId: orderId,
-                message: 'Vui lòng kiểm tra trạng thái đơn hàng trong hệ thống'
-            };
-
-        } catch (error) {
-            console.error('❌ Lỗi kiểm tra trạng thái VNPay:', error);
-            return {
-                success: false,
-                error: error.message
-            };
-        }
+    sortObject(obj) {
+        const sorted = {};
+        const keys = Object.keys(obj).sort();
+        keys.forEach(key => {
+            sorted[key] = obj[key];
+        });
+        return sorted;
     }
 }
 

@@ -25,9 +25,9 @@ Hệ thống đã được tích hợp cổng thanh toán VNPay, cho phép khác
 ### Biến môi trường (.env)
 ```env
 # VNPay Payment Configuration
-VNPAY_GATEWAY=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-VNPAY_TMN_CODE=VNPAY01
-VNPAY_HASH_SECRET=RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ
+VNPAY_GATEWAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+VNPAY_TMN_CODE=UWXDEI4Q
+VNPAY_HASH_SECRET=X11Q09FCSZ6KWF929Y3E1IZCEBR0O5Y7
 VNPAY_RETURN_URL=http://localhost:5000/vnpay/return
 VNPAY_IPN_URL=http://localhost:5000/vnpay/ipn
 ```
@@ -36,6 +36,16 @@ VNPAY_IPN_URL=http://localhost:5000/vnpay/ipn
 - **TMN Code**: VNPAY01
 - **Hash Secret**: RAOEXHYVSDDIIENYWSLDIIZTANXUXZFJ
 - **Gateway**: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+
+### Thông tin truy cập Merchant Admin
+- **Địa chỉ**: https://sandbox.vnpayment.vn/merchantv2/
+- **Tên đăng nhập**: lhpppppp306@gmail.com
+- **Mật khẩu**: (Mật khẩu đã đăng ký tại giao diện Merchant môi trường TEST)
+
+### Kiểm tra test case - IPN URL
+- **Kịch bản test (SIT)**: https://sandbox.vnpayment.vn/vnpaygw-sit-testing/user/login
+- **Tên đăng nhập**: lhpppppp306@gmail.com
+- **Mật khẩu**: (Mật khẩu đã đăng ký tại giao diện Merchant môi trường TEST)
 
 ## Quy trình thanh toán VNPay
 
@@ -197,20 +207,28 @@ GET /vnpay/status/:orderId
 - Hotline: 1900 555 577
 - Website: https://vnpay.vn/
 
-## So sánh với MoMo
 
-| Tính năng | VNPay | MoMo |
-|-----------|-------|------|
-| **Phương thức thanh toán** | ATM, Internet Banking, QR Code, Thẻ quốc tế | Ví điện tử MoMo |
-| **Độ phổ biến** | Rất cao (hầu hết ngân hàng) | Cao (người dùng MoMo) |
 | **Phí giao dịch** | 1.1% - 2.2% | 1.5% - 3% |
 | **Thời gian xử lý** | Tức thì | Tức thì |
 | **Bảo mật** | PCI DSS, 3D Secure | Mã hóa RSA, OTP |
 | **Hỗ trợ quốc tế** | Có (thẻ Visa/Master) | Không |
 
+## Lưu ý bảo mật
+
+1. **Không bao giờ** commit các thông tin nhạy cảm như `VNPAY_HASH_SECRET` vào repository
+2. Sử dụng HTTPS cho tất cả các URL callback trong production
+3. Luôn validate và verify chữ ký từ VNPay
+4. Implement rate limiting cho các endpoint thanh toán
+5. Log tất cả các giao dịch để audit
+
 ## Troubleshooting
 
 ### Lỗi thường gặp
+
+1. **Invalid signature**: Kiểm tra `VNPAY_HASH_SECRET`
+2. **Invalid merchant**: Kiểm tra `VNPAY_TMN_CODE`
+3. **Transaction not found**: Kiểm tra format `orderId`
+4. **Amount mismatch**: Đảm bảo amount được format đúng (VND, không có dấu phẩy)
 
 #### 1. Invalid signature
 ```
@@ -235,6 +253,13 @@ Giải pháp: Sử dụng ngrok hoặc deploy lên server public
 Nguyên nhân: Thông tin thẻ sai hoặc không đủ số dư
 Giải pháp: Sử dụng thông tin thẻ test đúng
 ```
+
+## Tài liệu tham khảo
+
+- **Tài liệu hướng dẫn tích hợp**: https://sandbox.vnpayment.vn/apis/docs/thanh-toan-pay/pay.html
+- **Code demo tích hợp**: https://sandbox.vnpayment.vn/apis/vnpay-demo/code-demo-tích-hợp
+- **Merchant Portal**: https://sandbox.vnpayment.vn/merchantv2/
+- **Test Environment**: https://sandbox.vnpayment.vn/vnpaygw-sit-testing/user/login
 
 ---
 

@@ -56,7 +56,7 @@ const sendOrderConfirmation = async (order, user) => {
                 ${order.paymentMethod === 'ewallet' && order.paymentStatus === 'awaiting' ? `
                     <div style="background-color: #f0f8ff; padding: 15px; border-left: 4px solid #28a745; margin: 10px 0;">
                         <h4>Thông tin thanh toán ví điện tử:</h4>
-                        <p><strong>Ví MoMo:</strong> 0123456789</p>
+        
                         <p><strong>Tên:</strong> Phương Store</p>
                         <p><strong>Nội dung:</strong> DH${order._id}</p>
                         <p><strong>Số tiền:</strong> ${order.totalPrice.toLocaleString('vi-VN')} VNĐ</p>

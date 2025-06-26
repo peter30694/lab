@@ -1,5 +1,5 @@
-const getDb = require('../util/database').getDb;
 const mongodb = require('mongodb');
+const { getDb } = require('../util/database');
 
 class Order {
     constructor(userId, items, totalPrice, shippingInfo = {}, paymentMethod = 'cod') {
@@ -25,14 +25,17 @@ class Order {
 
     // Xác định trạng thái thanh toán ban đầu dựa trên phương thức
     getInitialPaymentStatus(method) {
-        switch(method) {
+        switch (method) {
             case 'cod':
                 return 'pending'; // Chờ thanh toán khi nhận hàng
             case 'bank':
+            case 'bank_transfer':
             case 'ewallet':
                 return 'awaiting_payment'; // Chờ chuyển khoản
             case 'credit':
                 return 'processing'; // Đang xử lý thanh toán thẻ
+            case 'vnpay':
+                return 'processing'; // Đang xử lý thanh toán VNPay
             default:
                 return 'pending';
         }
@@ -43,8 +46,10 @@ class Order {
         const methods = {
             'cod': 'Thanh toán khi nhận hàng (COD)',
             'bank': 'Chuyển khoản ngân hàng',
+            'bank_transfer': 'Chuyển khoản QR Code',
             'ewallet': 'Ví điện tử',
-            'credit': 'Thẻ tín dụng/ghi nợ'
+            'credit': 'Thẻ tín dụng/ghi nợ',
+            'vnpay': 'VNPay'
         };
         return methods[this.paymentMethod] || 'Không xác định';
     }
@@ -120,20 +125,55 @@ class Order {
         }
     }
 
-    static async updatePaymentStatus(orderId, paymentStatus) {
+
+    static async updatePaymentStatus(orderId, paymentData) {
         const db = getDb();
         try {
+            const updateData = {
+                updatedAt: new Date()
+            };
+
+            if (typeof paymentData === 'string') {
+                updateData.paymentStatus = paymentData;
+            } else {
+                if (paymentData.paymentStatus) updateData.paymentStatus = paymentData.paymentStatus;
+                if (paymentData.paymentMethod) updateData.paymentMethod = paymentData.paymentMethod;
+                if (paymentData.transactionId) updateData.transactionId = paymentData.transactionId;
+                if (paymentData.paidAt) updateData.paidAt = paymentData.paidAt;
+                if (paymentData.failedAt) updateData.failedAt = paymentData.failedAt;
+                if (paymentData.failureReason) updateData.failureReason = paymentData.failureReason;
+                if (paymentData.vnpayData) updateData.vnpayData = paymentData.vnpayData;
+            }
+
             return await db.collection('orders').updateOne(
                 { _id: new mongodb.ObjectId(orderId) },
-                {
-                    $set: {
-                        paymentStatus: paymentStatus,
-                        updatedAt: new Date()
-                    }
-                }
+                { $set: updateData }
             );
         } catch (error) {
             console.error('❌ Lỗi khi cập nhật trạng thái thanh toán:', error);
+            throw error;
+        }
+    }
+
+
+    static async updateOrderStatus(orderId, status, note = '') {
+        const db = getDb();
+        try {
+            const updateData = {
+                status: status,
+                updatedAt: new Date()
+            };
+
+            if (note) {
+                updateData.statusNote = note;
+            }
+
+            return await db.collection('orders').updateOne(
+                { _id: new mongodb.ObjectId(orderId) },
+                { $set: updateData }
+            );
+        } catch (error) {
+            console.error('❌ Lỗi khi cập nhật trạng thái đơn hàng:', error);
             throw error;
         }
     }
@@ -161,6 +201,32 @@ class Order {
             'cancelled': 'Đã hủy'
         };
         return statusMap[this.status] || 'Không xác định';
+    }
+
+    // Method để hiển thị phương thức thanh toán (cho email)
+    getPaymentMethodDisplay() {
+        const methods = {
+            'cod': 'Thanh toán khi nhận hàng (COD)',
+            'bank': 'Chuyển khoản ngân hàng',
+            'bank_transfer': 'Chuyển khoản QR Code',
+            'ewallet': 'Ví điện tử',
+            'credit': 'Thẻ tín dụng/ghi nợ',
+            'vnpay': 'VNPay'
+        };
+        return methods[this.paymentMethod] || 'Không xác định';
+    }
+
+    // Method để hiển thị trạng thái thanh toán (cho email)
+    getPaymentStatusDisplay() {
+        const statuses = {
+            'pending': 'Chờ thanh toán',
+            'awaiting_payment': 'Chờ chuyển khoản',
+            'processing': 'Đang xử lý',
+            'completed': 'Đã thanh toán',
+            'failed': 'Thanh toán thất bại',
+            'refunded': 'Đã hoàn tiền'
+        };
+        return statuses[this.paymentStatus] || 'Không xác định';
     }
 }
 

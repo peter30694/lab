@@ -43,141 +43,85 @@
                 <i class="fas fa-credit-card"></i> Phương thức thanh toán
               </h5>
 
-              <div class="row">
-                <!-- Thanh toán khi nhận hàng -->
-                <div class="col-md-6 mb-3">
-                  <div class="card payment-method">
+              <div class="row justify-content-center">
+                <!-- COD - Thanh toán khi nhận hàng -->
+                <div class="col-md-6 col-lg-5 mb-3">
+                  <div class="card payment-method border-warning h-100">
                     <div class="card-body text-center">
                       <input type="radio" class="form-check-input" id="cod" name="paymentMethod" value="cod" checked>
                       <label class="form-check-label w-100" for="cod">
-                        <i class="fas fa-truck fa-2x text-success mb-2"></i>
-                        <h6>Thanh toán khi nhận hàng (COD)</h6>
-                        <small class="text-muted">Thanh toán bằng tiền mặt khi nhận hàng</small>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Chuyển khoản ngân hàng -->
-                <div class="col-md-6 mb-3">
-                  <div class="card payment-method">
-                    <div class="card-body text-center">
-                      <input type="radio" class="form-check-input" id="bank" name="paymentMethod" value="bank">
-                      <label class="form-check-label w-100" for="bank">
-                        <i class="fas fa-university fa-2x text-primary mb-2"></i>
-                        <h6>Chuyển khoản ngân hàng</h6>
-                        <small class="text-muted">Chuyển khoản trước khi giao hàng</small>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- MoMo -->
-                <div class="col-md-6 mb-3">
-                  <div class="card payment-method">
-                    <div class="card-body text-center">
-                      <input type="radio" class="form-check-input" id="momo" name="paymentMethod" value="momo">
-                      <label class="form-check-label w-100" for="momo">
-                        <i class="fas fa-mobile-alt fa-2x text-danger mb-2"></i>
-                        <h6>Ví MoMo</h6>
-                        <small class="text-muted">Thanh toán qua ví điện tử MoMo</small>
+                        <i class="fas fa-truck fa-4x text-warning mb-3"></i>
+                        <h4 class="text-warning">COD</h4>
+                        <p class="text-muted mb-2">Thanh toán khi nhận hàng</p>
+                        <small class="text-info d-block"><i class="fas fa-hand-holding-usd"></i> Tiện lợi - Không cần trả trước</small>
+                        <small class="text-success d-block mt-1"><i class="fas fa-check-circle"></i> Kiểm tra hàng trước khi thanh toán</small>
                       </label>
                     </div>
                   </div>
                 </div>
 
                 <!-- VNPay -->
-                <div class="col-md-6 mb-3">
-                  <div class="card payment-method">
+                <div class="col-md-6 col-lg-5 mb-3">
+                  <div class="card payment-method border-primary h-100">
                     <div class="card-body text-center">
                       <input type="radio" class="form-check-input" id="vnpay" name="paymentMethod" value="vnpay">
                       <label class="form-check-label w-100" for="vnpay">
-                        <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
-                        <h6>VNPay</h6>
-                        <small class="text-muted">Thanh toán qua VNPay</small>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Ví điện tử khác -->
-                <div class="col-md-6 mb-3">
-                  <div class="card payment-method">
-                    <div class="card-body text-center">
-                      <input type="radio" class="form-check-input" id="ewallet" name="paymentMethod" value="ewallet">
-                      <label class="form-check-label w-100" for="ewallet">
-                        <i class="fas fa-mobile-alt fa-2x text-warning mb-2"></i>
-                        <h6>Ví điện tử khác</h6>
-                        <small class="text-muted">ZaloPay, ViettelPay</small>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Thẻ tín dụng -->
-                <div class="col-md-6 mb-3">
-                  <div class="card payment-method">
-                    <div class="card-body text-center">
-                      <input type="radio" class="form-check-input" id="credit" name="paymentMethod" value="credit">
-                      <label class="form-check-label w-100" for="credit">
-                        <i class="fas fa-credit-card fa-2x text-info mb-2"></i>
-                        <h6>Thẻ tín dụng/ghi nợ</h6>
-                        <small class="text-muted">Visa, MasterCard, JCB</small>
+                        <i class="fas fa-credit-card fa-4x text-primary mb-3"></i>
+                        <h4 class="text-primary">VNPay</h4>
+                        <p class="text-muted mb-2">Thanh toán trực tuyến</p>
+                        <small class="text-info d-block"><i class="fas fa-shield-alt"></i> Bảo mật cao - Nhanh chóng</small>
+                        <small class="text-success d-block mt-1"><i class="fas fa-bolt"></i> Xử lý ngay lập tức</small>
                       </label>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Thông tin thanh toán chi tiết -->
-              <div id="payment-details" class="mt-3" style="display: none;">
-                <!-- Bank Transfer Details -->
-                <div id="bank-details" class="payment-detail" style="display: none;">
-                  <div class="alert alert-info">
-                    <h6><i class="fas fa-info-circle"></i> Thông tin chuyển khoản:</h6>
-                    <p class="mb-1"><strong>Ngân hàng:</strong> Vietinbank</p>
-                    <p class="mb-1"><strong>Số tài khoản:</strong> 104867904744</p>
-                    <p class="mb-1"><strong>Chủ tài khoản:</strong> LE HONG PHUONG</p>
-                    <p class="mb-0"><strong>Nội dung:</strong> [Họ tên] - [Số điện thoại]</p>
-                  </div>
-                </div>
-
-                <!-- MoMo Details -->
-                <div id="momo-details" class="payment-detail" style="display: none;">
-                  <div class="alert alert-danger">
-                    <h6><i class="fas fa-mobile-alt"></i> Thanh toán MoMo:</h6>
-                    <p class="mb-1"><i class="fas fa-info-circle"></i> Bạn sẽ được chuyển đến trang thanh toán MoMo</p>
-                    <p class="mb-1"><i class="fas fa-shield-alt"></i> Thanh toán an toàn và bảo mật</p>
-                    <p class="mb-0"><i class="fas fa-clock"></i> Xử lý thanh toán tức thì</p>
+              <!-- Thông tin chi tiết thanh toán -->
+              <div id="payment-details" class="mt-4">
+                <!-- COD Details -->
+                <div id="cod-details" class="payment-detail" style="display: block;">
+                  <div class="alert alert-warning border-warning">
+                    <h5 class="alert-heading"><i class="fas fa-truck"></i> Thanh toán khi nhận hàng (COD)</h5>
+                    <hr>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p class="mb-2"><i class="fas fa-info-circle text-warning"></i> <strong>Cách thức:</strong> Thanh toán bằng tiền mặt khi nhận hàng</p>
+                        <p class="mb-2"><i class="fas fa-clock text-warning"></i> <strong>Thời gian giao:</strong> 2-3 ngày làm việc</p>
+                        <p class="mb-2"><i class="fas fa-money-bill-wave text-warning"></i> <strong>Phí ship:</strong> 30.000đ (miễn phí với đơn > 500.000đ)</p>
+                      </div>
+                      <div class="col-md-6">
+                        <p class="mb-2"><i class="fas fa-check-circle text-success"></i> <strong>Ưu điểm:</strong> Kiểm tra hàng trước khi thanh toán</p>
+                        <p class="mb-2"><i class="fas fa-handshake text-success"></i> <strong>An toàn:</strong> Không cần thanh toán trước</p>
+                        <p class="mb-0"><i class="fas fa-exchange-alt text-success"></i> <strong>Đổi trả:</strong> Dễ dàng nếu không hài lòng</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <!-- VNPay Details -->
                 <div id="vnpay-details" class="payment-detail" style="display: none;">
-                  <div class="alert alert-primary">
-                    <h6><i class="fas fa-credit-card"></i> Thanh toán qua VNPay:</h6>
-                    <p class="mb-1"><i class="fas fa-info-circle"></i> Bạn sẽ được chuyển hướng đến cổng thanh toán VNPay</p>
-                    <p class="mb-1"><i class="fas fa-university"></i> Hỗ trợ thanh toán qua thẻ ATM, Internet Banking, QR Code</p>
-                    <p class="mb-1"><i class="fas fa-shield-alt"></i> Hỗ trợ hầu hết các ngân hàng tại Việt Nam</p>
-                    <p class="mb-0"><i class="fas fa-clock"></i> Giao dịch được xử lý nhanh chóng và an toàn</p>
-                  </div>
-                </div>
-
-                <!-- E-wallet Details -->
-                <div id="ewallet-details" class="payment-detail" style="display: none;">
-                  <div class="alert alert-warning">
-                    <h6><i class="fas fa-mobile-alt"></i> Thông tin ví điện tử khác:</h6>
-                    <p class="mb-1"><strong>ZaloPay:</strong> 0123456789</p>
-                    <p class="mb-1"><strong>ViettelPay:</strong> 0987654321</p>
-                    <p class="mb-0"><strong>Nội dung:</strong> [Họ tên] - [Số điện thoại]</p>
-                  </div>
-                </div>
-
-                <!-- Credit Card Details -->
-                <div id="credit-details" class="payment-detail" style="display: none;">
-                  <div class="alert alert-info">
-                    <h6><i class="fas fa-credit-card"></i> Thanh toán thẻ:</h6>
-                    <p class="mb-0">Bạn sẽ được chuyển đến trang thanh toán an toàn để nhập thông tin thẻ.</p>
+                  <div class="alert alert-primary border-primary">
+                    <h5 class="alert-heading"><i class="fas fa-credit-card"></i> Thanh toán VNPay</h5>
+                    <hr>
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <p class="mb-2"><i class="fas fa-shield-alt text-primary"></i> <strong>Bảo mật:</strong> Thanh toán trực tuyến an toàn</p>
+                        <p class="mb-2"><i class="fas fa-university text-primary"></i> <strong>Hỗ trợ:</strong> ATM, Visa, MasterCard, JCB</p>
+                        <p class="mb-0"><i class="fas fa-bolt text-primary"></i> <strong>Xử lý:</strong> Ngay lập tức - Không phí giao dịch</p>
+                      </div>
+                      <div class="col-md-6">
+                        <p class="mb-2"><i class="fas fa-lock text-success"></i> <strong>Mã hóa:</strong> SSL 256-bit</p>
+                        <p class="mb-2"><i class="fas fa-mobile-alt text-success"></i> <strong>Tiện lợi:</strong> Thanh toán mọi lúc mọi nơi</p>
+                        <p class="mb-0"><i class="fas fa-receipt text-success"></i> <strong>Hóa đơn:</strong> Tự động gửi email</p>
+                      </div>
+                    </div>
+                    
+                    <div class="bg-light p-3 rounded">
+                      <p class="mb-2 text-center"><strong><i class="fas fa-info-circle"></i> Lưu ý quan trọng:</strong></p>
+                      <p class="mb-1 text-center">Khi chọn VNPay, bạn sẽ được chuyển hướng đến trang thanh toán VNPay</p>
+                      <p class="mb-0 text-center text-muted">Vui lòng hoàn tất thanh toán trong vòng 15 phút</p>
+                    </div>
                   </div>
                 </div>
               </div>

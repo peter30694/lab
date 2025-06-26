@@ -1,13 +1,12 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
 const User = require('../models/user');
+const VNPayService = require('../util/vnpay');
 const { sendOrderConfirmation, sendNewOrderNotification } = require('../util/email');
 const mongodb = require('mongodb'); // 👈 Thêm dòng này vào đây
 const fs = require('fs');
 const { generateOrderPDF } = require('../util/pdf'); // Thêm import này
 const mongoose = require('mongoose'); // Thêm import này
-const MomoPaymentService = require('../util/momo');
-const VNPayService = require('../util/vnpay'); // Import MoMo service
 
 
 exports.getProducts = (req, res, next) => {
@@ -296,157 +295,127 @@ exports.postCartUpdateQuantity = async (req, res, next) => {
 
 exports.postOrder = async (req, res, next) => {
   try {
-    // ✅ Kiểm tra đăng nhập
-    if (!req.session.user || !req.session.user._id) {
-      return res.redirect('/create-default-user');
-    }
-
-    // ✅ Lấy thông tin khách hàng từ form checkout
-    const { name, phone, email, address, paymentMethod } = req.body;
-
-    // ✅ Kiểm tra các trường bắt buộc
-    if (!name || !phone || !email || !address || !paymentMethod) {
-      return res.status(400).render('error', {
-        pageTitle: 'Lỗi',
-        path: '/error',
-        error: 'Vui lòng điền đầy đủ thông tin giao hàng và chọn phương thức thanh toán',
-        isAuthenticated: !!req.session.user,
-        isAdmin: req.session.user?.role === 'admin'
+    const { paymentMethod, name, phone, address, note, vnpayMethod, vnpayBank } = req.body;
+    
+    // Validate payment method
+    const validPaymentMethods = ['cod', 'vnpay', 'bank_transfer', 'e_wallet'];
+    if (!validPaymentMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phương thức thanh toán không hợp lệ'
       });
     }
 
-    // ✅ Lấy thông tin người dùng từ database
-    const userData = await User.findById(req.session.user._id);
+    const userData = await User.findById(req.user._id);
     if (!userData) {
-      return res.redirect('/create-default-user');
+      return res.redirect('/login');
     }
-
-    // ✅ Khởi tạo lại đối tượng User
+    
     const user = new User(userData.name, userData.email, userData.role);
     user._id = new mongodb.ObjectId(userData._id);
     user.cart = userData.cart || { items: [], totalPrice: 0 };
-
-    // ✅ Lấy giỏ hàng
+    
     const cart = await user.getCart();
+    
     if (!cart.items || cart.items.length === 0) {
       return res.redirect('/cart');
     }
 
-    // ✅ Tạo đơn hàng với thông tin giao hàng và thanh toán
-    const order = new Order(user._id, cart.items, cart.totalPrice, {
-      name,
-      phone,
-      email,
-      address
-    }, paymentMethod);
+    const products = cart.items.map(item => {
+      return {
+        quantity: item.quantity,
+        product: {
+          _id: item._id,
+          title: item.title,
+          price: item.price,
+          imageUrl: item.imageUrl
+        }
+      };
+    });
 
-    // ✅ Lưu đơn hàng trước
+    // Calculate total
+    const subtotal = products.reduce((total, item) => {
+      return total + (item.product.price * item.quantity);
+    }, 0);
+    
+    const shippingFee = subtotal >= 500000 ? 0 : 30000;
+    const totalAmount = subtotal + shippingFee;
+
+    const order = new Order({
+      user: {
+        userId: req.user._id,
+        name: name,
+        phone: phone,
+        address: address
+      },
+      products: products,
+      totalAmount: totalAmount,
+      shippingFee: shippingFee,
+      paymentMethod: paymentMethod,
+      paymentStatus: 'pending',
+      orderStatus: 'pending',
+      note: note || '',
+      orderDate: new Date()
+    });
+
     await order.save();
 
-    // ✅ Xử lý thanh toán MoMo
-    if (paymentMethod === 'momo') {
-      try {
-        const momoService = new MomoPaymentService();
-        const paymentResult = await momoService.createPayment({
-          orderId: order._id.toString(),
-          amount: cart.totalPrice,
-          orderInfo: `Thanh toán đơn hàng ${order._id}`,
-          customerInfo: {
-            name: name,
-            phone: phone,
-            email: email
-          }
-        });
-
-        if (paymentResult.success) {
-          // Xóa giỏ hàng sau khi tạo payment thành công
-          await user.clearCart();
-          // Chuyển hướng đến trang thanh toán MoMo
-          return res.redirect(paymentResult.payUrl);
-        } else {
-          // Nếu tạo payment thất bại, hiển thị lỗi
-          return res.status(500).render('error', {
-            pageTitle: 'Lỗi thanh toán | Phương Store',
-            path: '/error',
-            error: `Lỗi MoMo: ${paymentResult.error}`,
-            isAuthenticated: !!req.session.user,
-            isAdmin: req.session.user?.role === 'admin'
-          });
-        }
-      } catch (error) {
-        console.error('Lỗi khi tạo thanh toán MoMo:', error);
-        return res.status(500).render('error', {
-          pageTitle: 'Lỗi thanh toán | Phương Store',
-          path: '/error',
-          error: 'Không thể kết nối đến MoMo',
-          isAuthenticated: !!req.session.user,
-          isAdmin: req.session.user?.role === 'admin'
-        });
-      }
-    }
-
-    // ✅ Xử lý thanh toán VNPay
+    // Handle different payment methods
     if (paymentMethod === 'vnpay') {
-      try {
-        const vnpayService = new VNPayService();
-        const paymentResult = await vnpayService.createPayment({
-          orderId: order._id.toString(),
-          amount: cart.totalPrice,
-          orderInfo: `Thanh toán đơn hàng ${order._id}`,
-          returnUrl: process.env.VNPAY_RETURN_URL || 'http://localhost:5000/vnpay/return',
-          ipAddr: req.ip || req.connection.remoteAddress || '127.0.0.1'
-        });
-
-        if (paymentResult.success) {
-          // Xóa giỏ hàng sau khi tạo payment thành công
-          await user.clearCart();
-          // Chuyển hướng đến trang thanh toán VNPay
-          return res.redirect(paymentResult.paymentUrl);
-        } else {
-          // Nếu tạo payment thất bại, hiển thị lỗi
-          return res.status(500).render('error', {
-            pageTitle: 'Lỗi thanh toán | Phương Store',
-            path: '/error',
-            error: `Lỗi VNPay: ${paymentResult.error}`,
-            isAuthenticated: !!req.session.user,
-            isAdmin: req.session.user?.role === 'admin'
-          });
-        }
-      } catch (error) {
-        console.error('Lỗi khi tạo thanh toán VNPay:', error);
-        return res.status(500).render('error', {
-          pageTitle: 'Lỗi thanh toán | Phương Store',
-          path: '/error',
-          error: 'Không thể kết nối đến VNPay',
-          isAuthenticated: !!req.session.user,
-          isAdmin: req.session.user?.role === 'admin'
+      const vnpayService = new VNPayService();
+      
+      // Create VNPay payment URL
+      const paymentData = {
+        amount: totalAmount,
+        orderInfo: `Thanh toan don hang ${order._id.toString()}`,
+        orderType: 'other',
+        bankCode: '',
+        locale: 'vn',
+        ipAddr: req.ip || req.connection.remoteAddress || '127.0.0.1'
+      };
+      
+      console.log('PaymentData being sent to VNPay:', JSON.stringify(paymentData, null, 2));
+      
+      const paymentResult = vnpayService.createPayment(paymentData);
+      console.log('VNPay payment result:', JSON.stringify(paymentResult, null, 2));
+      
+      if (paymentResult.success) {
+        // Store order ID in session for return handling
+        req.session.pendingOrderId = order._id;
+        
+        console.log('Redirecting to VNPay URL:', paymentResult.paymentUrl);
+        // Redirect trực tiếp đến VNPay
+        return res.redirect(paymentResult.paymentUrl);
+      } else {
+        console.error('VNPay payment creation failed:', paymentResult.error);
+        return res.status(500).json({
+          success: false,
+          message: 'Không thể tạo liên kết thanh toán VNPay: ' + (paymentResult.error || 'Unknown error')
         });
       }
+    } else if (paymentMethod === 'cod') {
+      // COD - Cash on Delivery
+      order.paymentStatus = 'pending';
+      order.orderStatus = 'confirmed';
+      await order.save();
+      
+      // Clear cart and redirect
+      await user.clearCart();
+      
+      // Set success message
+      req.session.successMessage = 'Đơn hàng đã được tạo thành công! Bạn sẽ thanh toán khi nhận hàng.';
+      
+      return res.redirect('/orders');
+    } else {
+      // Invalid payment method
+      return res.status(400).json({
+        success: false,
+        message: 'Phương thức thanh toán không hợp lệ'
+      });
     }
-
-    // ✅ Xóa giỏ hàng cho các phương thức thanh toán khác
-    await user.clearCart();
-
-    // ✅ Chuyển hướng thành công
-    res.redirect('/orders?success=true');
-
-    // ✅ Gửi email xác nhận (không chặn luồng)
-    Promise.all([
-      sendOrderConfirmation(order, user),
-      sendNewOrderNotification(order, user)
-    ]).catch(err => {
-      console.error('Lỗi khi gửi email:', err);
-    });
-
-  } catch (err) {
-    console.error('Lỗi khi đặt hàng:', err);
-    res.status(500).render('error', {
-      pageTitle: 'Lỗi | Phương Store',
-      path: '/error',
-      error: 'Không thể tạo đơn hàng',
-      isAuthenticated: !!req.session.user,
-      isAdmin: req.session.user?.role === 'admin'
-    });
+  } catch (error) {
+    console.error('Error creating order:', error);
+    next(error);
   }
 };
 

@@ -8,7 +8,7 @@ const rootDir = require('../util/path');
 const products = require('./admin').products;
 
 const shopController = require('../controllers/shop');
-const momoController = require('../controllers/momo');
+
 const vnpayController = require('../controllers/vnpay');
 const { sendOrderConfirmation } = require('../util/email');
 const User = require('../models/user');
@@ -85,14 +85,11 @@ router.get('/download-invoice/:orderId', isAuth, shopController.getDownloadInvoi
 
 router.get('/checkout', shopController.getCheckout);
 
-// Routes cho MoMo payment
-router.get('/momo/return', momoController.handleMomoReturn);
-router.post('/momo/notify', momoController.handleMomoNotify);
-router.get('/momo/status/:orderId', momoController.checkMomoPaymentStatus);
+
 
 // Routes cho VNPay payment
 router.get('/vnpay/return', vnpayController.handleVNPayReturn);
-router.post('/vnpay/ipn', vnpayController.handleVNPayIPN);
+router.get('/vnpay/ipn', vnpayController.handleVNPayIPN);
 router.get('/vnpay/status/:orderId', vnpayController.checkVNPayPaymentStatus);
 
 module.exports = router;
