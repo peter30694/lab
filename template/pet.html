@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetShop - Cửa hàng thú cưng chuyên nghiệp</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#4f46e5',secondary:'#f97316'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .hero-section {
+            background-image: url('https://readdy.ai/api/search-image?query=A%20professional%20pet%20shop%20with%20adorable%20puppies%20and%20kittens%20in%20a%20bright%2C%20clean%20environment.%20The%20left%20side%20has%20a%20smooth%20gradient%20to%20white%20for%20text%20placement.%20High-quality%2C%20modern%20pet%20store%20with%20premium%20products%20visible.%20Soft%20lighting%2C%20friendly%20atmosphere%2C%20perfect%20for%20showcasing%20pet%20products%20and%20services.&width=1600&height=800&seq=hero1&orientation=landscape');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <h1 class="text-3xl font-['Pacifico'] text-primary">logo</h1>
+            </div>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#" class="text-gray-700 hover:text-primary font-medium">Trang chủ</a>
+                <a href="#" class="text-gray-700 hover:text-primary font-medium">Thú cưng</a>
+                <a href="#" class="text-gray-700 hover:text-primary font-medium">Phụ kiện</a>
+                <a href="#" class="text-gray-700 hover:text-primary font-medium">Dịch vụ</a>
+                <a href="#" class="text-gray-700 hover:text-primary font-medium">Liên hệ</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full">
+                    <i class="ri-search-line text-gray-600"></i>
+                </div>
+                <div class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full relative">
+                    <i class="ri-shopping-cart-line text-gray-600"></i>
+                    <span class="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">3</span>
+                </div>
+                <a href="#" class="bg-primary text-white px-4 py-2 !rounded-button whitespace-nowrap">Đăng nhập</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section relative">
+        <div class="container mx-auto px-4 py-20 w-full">
+            <div class="max-w-xl">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Chào mừng đến với cửa hàng thú cưng của chúng tôi</h2>
+                <p class="text-lg text-gray-700 mb-8">Nơi bạn có thể tìm thấy người bạn đồng hành hoàn hảo và tất cả những gì họ cần để sống một cuộc sống khỏe mạnh, hạnh phúc.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="bg-primary text-white px-6 py-3 !rounded-button font-medium whitespace-nowrap">Khám phá ngay</a>
+                    <a href="#" class="bg-white text-primary border border-primary px-6 py-3 !rounded-button font-medium whitespace-nowrap">Tìm hiểu thêm</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Danh mục thú cưng</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Khám phá đa dạng các loại thú cưng đáng yêu và đặc biệt tại cửa hàng của chúng tôi.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                    <div class="h-64 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=A%20cute%20puppy%20with%20fluffy%20fur%2C%20bright%20eyes%2C%20and%20playful%20expression.%20The%20puppy%20is%20a%20golden%20retriever%20breed%20with%20soft%20golden%20fur.%20The%20background%20is%20clean%20white%20studio%20setting.%20Professional%20pet%20photography%20with%20soft%20lighting%20to%20highlight%20the%20puppys%20adorable%20features.&width=500&height=500&seq=pet1&orientation=squarish" alt="Chó cưng" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Chó cưng</h3>
+                        <p class="text-gray-600 mb-4">Đa dạng giống chó thuần chủng và lai với đầy đủ giấy tờ, tiêm phòng.</p>
+                        <a href="#" class="text-primary font-medium flex items-center">
+                            Xem thêm 
+                            <i class="ri-arrow-right-line ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                    <div class="h-64 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=A%20beautiful%20kitten%20with%20soft%20fur%20and%20bright%20curious%20eyes.%20The%20kitten%20is%20a%20British%20Shorthair%20breed%20with%20blue-gray%20coat.%20The%20background%20is%20clean%20white%20studio%20setting.%20Professional%20pet%20photography%20with%20soft%20lighting%20to%20highlight%20the%20kittens%20adorable%20features%20and%20playful%20expression.&width=500&height=500&seq=pet2&orientation=squarish" alt="Mèo cưng" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Mèo cưng</h3>
+                        <p class="text-gray-600 mb-4">Các giống mèo đẹp, hiếm từ trong và ngoài nước với nguồn gốc rõ ràng.</p>
+                        <a href="#" class="text-primary font-medium flex items-center">
+                            Xem thêm 
+                            <i class="ri-arrow-right-line ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                    <div class="h-64 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=A%20colorful%20tropical%20fish%20in%20an%20aquarium%20with%20clear%20water.%20The%20fish%20has%20vibrant%20colors%20with%20blue%2C%20orange%2C%20and%20yellow%20patterns.%20The%20background%20shows%20clean%20aquarium%20decorations%20and%20plants.%20Professional%20aquarium%20photography%20with%20perfect%20lighting%20to%20showcase%20the%20fishs%20beautiful%20colors%20and%20details.&width=500&height=500&seq=pet3&orientation=squarish" alt="Cá cảnh" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Cá cảnh</h3>
+                        <p class="text-gray-600 mb-4">Cá cảnh nhiều màu sắc, dễ nuôi và thích hợp cho mọi không gian sống.</p>
+                        <a href="#" class="text-primary font-medium flex items-center">
+                            Xem thêm 
+                            <i class="ri-arrow-right-line ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                    <div class="h-64 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=A%20cute%20small%20pet%20hamster%20with%20fluffy%20fur%20and%20bright%20eyes.%20The%20hamster%20is%20golden%20brown%20with%20white%20patches.%20The%20background%20is%20clean%20with%20some%20natural%20bedding%20material.%20Professional%20small%20pet%20photography%20with%20soft%20lighting%20to%20highlight%20the%20hamsters%20adorable%20features%20and%20tiny%20paws.&width=500&height=500&seq=pet4&orientation=squarish" alt="Thú nhỏ" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Thú nhỏ</h3>
+                        <p class="text-gray-600 mb-4">Hamster, thỏ, chuột lang và các loại thú nhỏ dễ thương khác.</p>
+                        <a href="#" class="text-primary font-medium flex items-center">
+                            Xem thêm 
+                            <i class="ri-arrow-right-line ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Hệ thống quản lý hiện đại</h2>
+                    <p class="text-gray-600 mb-6">Chúng tôi sử dụng hệ thống quản lý tiên tiến để đảm bảo mọi thông tin về thú cưng đều được cập nhật chính xác và đầy đủ.</p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <div class="w-6 h-6 flex items-center justify-center rounded-full bg-primary text-white mt-1">
+                                <i class="ri-check-line"></i>
+                            </div>
+                            <span class="ml-3 text-gray-700">Quản lý chi tiết từng loại thú cưng</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-6 h-6 flex items-center justify-center rounded-full bg-primary text-white mt-1">
+                                <i class="ri-check-line"></i>
+                            </div>
+                            <span class="ml-3 text-gray-700">Hỗ trợ phân loại và tìm kiếm linh hoạt</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-6 h-6 flex items-center justify-center rounded-full bg-primary text-white mt-1">
+                                <i class="ri-check-line"></i>
+                            </div>
+                            <span class="ml-3 text-gray-700">Báo cáo thống kê chi tiết theo ngày/tháng</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-6 h-6 flex items-center justify-center rounded-full bg-primary text-white mt-1">
+                                <i class="ri-check-line"></i>
+                            </div>
+                            <span class="ml-3 text-gray-700">Tích hợp thanh toán trực tuyến an toàn</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="inline-block mt-8 bg-primary text-white px-6 py-3 !rounded-button font-medium whitespace-nowrap">Tìm hiểu thêm</a>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://readdy.ai/api/search-image?query=A%20modern%20pet%20shop%20management%20system%20interface%20displayed%20on%20a%20computer%20screen.%20The%20screen%20shows%20pet%20inventory%20management%20with%20images%20of%20dogs%20and%20cats%2C%20sales%20statistics%2C%20and%20customer%20information.%20The%20interface%20is%20clean%2C%20professional%2C%20and%20user-friendly%20with%20blue%20and%20white%20color%20scheme.%20The%20background%20shows%20a%20neat%20office%20desk%20with%20some%20pet-related%20items.&width=600&height=400&seq=admin1&orientation=landscape" alt="Hệ thống quản lý" class="w-full rounded-lg shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Thống kê bán hàng</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Theo dõi chi tiết doanh số bán hàng theo thời gian thực.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex flex-wrap mb-6">
+                    <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-primary">
+                                    <i class="ri-shopping-bag-line ri-lg"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500 text-sm">Tổng đơn hàng</p>
+                                    <h3 class="text-2xl font-bold text-gray-900">1,248</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                                    <i class="ri-money-dollar-circle-line ri-lg"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500 text-sm">Doanh thu</p>
+                                    <h3 class="text-2xl font-bold text-gray-900">458,6M VND</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/3 px-2">
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
+                                    <i class="ri-user-line ri-lg"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-gray-500 text-sm">Khách hàng</p>
+                                    <h3 class="text-2xl font-bold text-gray-900">752</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap">
+                    <div class="w-full lg:w-2/3 pr-0 lg:pr-4 mb-6 lg:mb-0">
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-medium text-gray-900">Doanh thu theo tháng</h4>
+                                <div class="flex items-center space-x-2">
+                                    <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 !rounded-button whitespace-nowrap">Ngày</button>
+                                    <button class="px-3 py-1 text-sm text-white bg-primary !rounded-button whitespace-nowrap">Tháng</button>
+                                    <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 !rounded-button whitespace-nowrap">Năm</button>
+                                </div>
+                            </div>
+                            <div id="revenue-chart" class="w-full h-80"></div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/3">
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-medium text-gray-900">Phân loại bán hàng</h4>
+                                <button class="text-primary text-sm">Xem tất cả</button>
+                            </div>
+                            <div id="category-chart" class="w-full h-80"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Quản lý sản phẩm</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Hệ thống quản lý sản phẩm thú cưng với đầy đủ tính năng thêm, sửa, xóa và hiển thị chi tiết.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div class="w-full md:w-auto mb-4 md:mb-0">
+                            <div class="flex items-center">
+                                <div class="relative">
+                                    <input type="text" placeholder="Tìm kiếm sản phẩm..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center">
+                                        <i class="ri-search-line text-gray-400"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <button class="flex items-center text-gray-700 hover:text-primary">
+                                        <i class="ri-filter-3-line mr-1"></i>
+                                        <span>Lọc</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-auto">
+                            <button class="bg-primary text-white px-4 py-2 !rounded-button whitespace-nowrap flex items-center">
+                                <i class="ri-add-line mr-1"></i>
+                                <span>Thêm sản phẩm</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 flex-shrink-0 rounded-full overflow-hidden">
+                                            <img src="https://readdy.ai/api/search-image?query=A%20cute%20golden%20retriever%20puppy%20with%20soft%20fur%20and%20bright%20eyes%20looking%20at%20camera.%20Professional%20pet%20photography%20with%20clean%20white%20background.&width=100&height=100&seq=prod1&orientation=squarish" alt="Golden Retriever" class="h-full w-full object-cover">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Golden Retriever</div>
+                                            <div class="text-sm text-gray-500">2 tháng tuổi</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Chó cưng</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">15,000,000 VND</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Còn hàng</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-900">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 flex-shrink-0 rounded-full overflow-hidden">
+                                            <img src="https://readdy.ai/api/search-image?query=A%20cute%20British%20Shorthair%20kitten%20with%20blue-gray%20fur%20and%20bright%20eyes%20looking%20at%20camera.%20Professional%20pet%20photography%20with%20clean%20white%20background.&width=100&height=100&seq=prod2&orientation=squarish" alt="British Shorthair" class="h-full w-full object-cover">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">British Shorthair</div>
+                                            <div class="text-sm text-gray-500">3 tháng tuổi</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Mèo cưng</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">12,500,000 VND</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Còn hàng</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-900">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 flex-shrink-0 rounded-full overflow-hidden">
+                                            <img src="https://readdy.ai/api/search-image?query=A%20cute%20Pomeranian%20puppy%20with%20fluffy%20orange%20fur%20and%20bright%20eyes%20looking%20at%20camera.%20Professional%20pet%20photography%20with%20clean%20white%20background.&width=100&height=100&seq=prod3&orientation=squarish" alt="Pomeranian" class="h-full w-full object-cover">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Pomeranian</div>
+                                            <div class="text-sm text-gray-500">2.5 tháng tuổi</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Chó cưng</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">18,000,000 VND</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Sắp hết</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-900">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 flex-shrink-0 rounded-full overflow-hidden">
+                                            <img src="https://readdy.ai/api/search-image?query=A%20cute%20Ragdoll%20cat%20with%20blue%20eyes%20and%20white%20and%20gray%20fur%20looking%20at%20camera.%20Professional%20pet%20photography%20with%20clean%20white%20background.&width=100&height=100&seq=prod4&orientation=squarish" alt="Ragdoll" class="h-full w-full object-cover">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Ragdoll</div>
+                                            <div class="text-sm text-gray-500">4 tháng tuổi</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Mèo cưng</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">16,800,000 VND</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Hết hàng</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-900">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 flex-shrink-0 rounded-full overflow-hidden">
+                                            <img src="https://readdy.ai/api/search-image?query=A%20cute%20Corgi%20puppy%20with%20short%20legs%20and%20orange-white%20fur%20looking%20at%20camera.%20Professional%20pet%20photography%20with%20clean%20white%20background.&width=100&height=100&seq=prod5&orientation=squarish" alt="Corgi" class="h-full w-full object-cover">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Corgi</div>
+                                            <div class="text-sm text-gray-500">3 tháng tuổi</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">Chó cưng</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">20,500,000 VND</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Còn hàng</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-900">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-700">
+                            Hiển thị <span class="font-medium">1</span> đến <span class="font-medium">5</span> của <span class="font-medium">24</span> kết quả
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">Trước</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-white bg-primary !rounded-button whitespace-nowrap">1</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">2</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">3</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">Tiếp</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Thanh toán trực tuyến</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Chúng tôi hỗ trợ nhiều phương thức thanh toán an toàn và tiện lợi.</p>
+            </div>
+            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900">Phương thức thanh toán</h3>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-4">Chọn phương thức thanh toán</h4>
+                            <div class="space-y-4">
+                                <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary">
+                                    <div class="relative w-5 h-5 mr-3">
+                                        <input type="radio" name="payment" class="absolute opacity-0 w-0 h-0" checked>
+                                        <div class="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 flex items-center justify-center mr-3">
+                                            <i class="ri-bank-card-line text-gray-600"></i>
+                                        </div>
+                                        <span>Thẻ tín dụng / Ghi nợ</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary">
+                                    <div class="relative w-5 h-5 mr-3">
+                                        <input type="radio" name="payment" class="absolute opacity-0 w-0 h-0">
+                                        <div class="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-0">
+                                            <div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 flex items-center justify-center mr-3">
+                                            <i class="ri-alipay-fill text-blue-500"></i>
+                                        </div>
+                                        <span>VNPay</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary">
+                                    <div class="relative w-5 h-5 mr-3">
+                                        <input type="radio" name="payment" class="absolute opacity-0 w-0 h-0">
+                                        <div class="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-0">
+                                            <div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 flex items-center justify-center mr-3">
+                                            <i class="ri-wechat-pay-fill text-green-500"></i>
+                                        </div>
+                                        <span>MoMo</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary">
+                                    <div class="relative w-5 h-5 mr-3">
+                                        <input type="radio" name="payment" class="absolute opacity-0 w-0 h-0">
+                                        <div class="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-0">
+                                            <div class="w-2.5 h-2.5 bg-primary rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 flex items-center justify-center mr-3">
+                                            <i class="ri-money-dollar-circle-line text-gray-600"></i>
+                                        </div>
+                                        <span>Thanh toán khi nhận hàng</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-4">Thông tin thẻ</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên chủ thẻ</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Nguyễn Văn A">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Số thẻ</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="1234 5678 9012 3456">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày hết hạn</label>
+                                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="MM/YY">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Mã CVV</label>
+                                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="123">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 bg-gray-50 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Tổng tiền</p>
+                            <p class="text-2xl font-bold text-gray-900">15,000,000 VND</p>
+                        </div>
+                        <button class="bg-primary text-white px-6 py-3 !rounded-button font-medium whitespace-nowrap">Thanh toán ngay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Đăng nhập hệ thống</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Đăng nhập để quản lý tài khoản và truy cập các tính năng đặc biệt.</p>
+            </div>
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <div class="flex justify-center mb-6">
+                        <div class="inline-flex rounded-full overflow-hidden p-1 bg-gray-100">
+                            <button class="px-4 py-2 bg-primary text-white !rounded-full whitespace-nowrap">Đăng nhập</button>
+                            <button class="px-4 py-2 text-gray-700 !rounded-full whitespace-nowrap">Đăng ký</button>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="email@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                            <div class="relative">
+                                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="••••••••">
+                                <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <div class="relative w-5 h-5 mr-2">
+                                    <input type="checkbox" class="absolute opacity-0 w-0 h-0">
+                                    <div class="w-5 h-5 border-2 border-gray-300 rounded"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center opacity-0">
+                                        <i class="ri-check-line text-white text-xs"></i>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-700">Ghi nhớ đăng nhập</span>
+                            </label>
+                            <a href="#" class="text-sm text-primary hover:underline">Quên mật khẩu?</a>
+                        </div>
+                        <button class="w-full bg-primary text-white py-2 !rounded-button font-medium whitespace-nowrap">Đăng nhập</button>
+                        <div class="relative flex items-center justify-center">
+                            <div class="border-t border-gray-300 flex-grow"></div>
+                            <div class="mx-4 text-sm text-gray-500">hoặc đăng nhập với</div>
+                            <div class="border-t border-gray-300 flex-grow"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button class="flex items-center justify-center py-2 border border-gray-300 rounded-lg hover:bg-gray-50 !rounded-button whitespace-nowrap">
+                                <i class="ri-google-fill text-red-500"></i>
+                            </button>
+                            <button class="flex items-center justify-center py-2 border border-gray-300 rounded-lg hover:bg-gray-50 !rounded-button whitespace-nowrap">
+                                <i class="ri-facebook-fill text-blue-600"></i>
+                            </button>
+                            <button class="flex items-center justify-center py-2 border border-gray-300 rounded-lg hover:bg-gray-50 !rounded-button whitespace-nowrap">
+                                <i class="ri-apple-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-['Pacifico'] text-white mb-4">logo</h3>
+                    <p class="text-gray-400 mb-4">Cửa hàng thú cưng uy tín hàng đầu Việt Nam, cung cấp đa dạng các loại thú cưng và phụ kiện chất lượng cao.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary">
+                            <i class="ri-facebook-fill"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary">
+                            <i class="ri-instagram-line"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary">
+                            <i class="ri-youtube-line"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary">
+                            <i class="ri-twitter-x-line"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Liên kết nhanh</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Trang chủ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Thú cưng</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Phụ kiện</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Dịch vụ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Tin tức</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Hỗ trợ</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Câu hỏi thường gặp</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Chính sách vận chuyển</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Chính sách đổi trả</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Chính sách bảo mật</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Điều khoản sử dụng</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Liên hệ</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center mt-1 mr-3">
+                                <i class="ri-map-pin-line text-primary"></i>
+                            </div>
+                            <span class="text-gray-400">123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center mt-1 mr-3">
+                                <i class="ri-phone-line text-primary"></i>
+                            </div>
+                            <span class="text-gray-400">+84 123 456 789</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center mt-1 mr-3">
+                                <i class="ri-mail-line text-primary"></i>
+                            </div>
+                            <span class="text-gray-400">info@petshop.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center mt-1 mr-3">
+                                <i class="ri-time-line text-primary"></i>
+                            </div>
+                            <span class="text-gray-400">8:00 - 20:00, Thứ Hai - Chủ Nhật</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 mb-4 md:mb-0">© 2025 PetShop. Tất cả các quyền được bảo lưu.</p>
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-6 flex items-center justify-center">
+                        <i class="ri-visa-line text-xl text-gray-400"></i>
+                    </div>
+                    <div class="w-10 h-6 flex items-center justify-center">
+                        <i class="ri-mastercard-line text-xl text-gray-400"></i>
+                    </div>
+                    <div class="w-10 h-6 flex items-center justify-center">
+                        <i class="ri-paypal-line text-xl text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script id="chart-init">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Revenue Chart
+            const revenueChart = echarts.init(document.getElementById('revenue-chart'));
+            const revenueOption = {
+                animation: false,
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    textStyle: {
+                        color: '#1f2937'
+                    }
+                },
+                grid: {
+                    top: 10,
+                    right: 10,
+                    bottom: 20,
+                    left: 40
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                    axisLine: {
+                        lineStyle: {
+                            color: '#e5e7eb'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#1f2937'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: '#1f2937'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#f3f4f6'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: 'Doanh thu',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'none',
+                        lineStyle: {
+                            width: 3,
+                            color: 'rgba(87, 181, 231, 1)'
+                        },
+                        areaStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: 'rgba(87, 181, 231, 0.2)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(87, 181, 231, 0.01)'
+                                }]
+                            }
+                        },
+                        data: [35, 42, 60, 85, 75, 90, 105, 115, 94, 110, 120, 135]
+                    }
+                ]
+            };
+            revenueChart.setOption(revenueOption);
+
+            // Category Chart
+            const categoryChart = echarts.init(document.getElementById('category-chart'));
+            const categoryOption = {
+                animation: false,
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    textStyle: {
+                        color: '#1f2937'
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center',
+                    textStyle: {
+                        color: '#1f2937'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Phân loại',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        center: ['40%', '50%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 8
+                        },
+                        label: {
+                            show: false
+                        },
+                        emphasis: {
+                            label: {
+                                show: false
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 45, name: 'Chó cưng', itemStyle: { color: 'rgba(87, 181, 231, 1)' } },
+                            { value: 30, name: 'Mèo cưng', itemStyle: { color: 'rgba(141, 211, 199, 1)' } },
+                            { value: 15, name: 'Cá cảnh', itemStyle: { color: 'rgba(251, 191, 114, 1)' } },
+                            { value: 10, name: 'Thú nhỏ', itemStyle: { color: 'rgba(252, 141, 98, 1)' } }
+                        ]
+                    }
+                ]
+            };
+            categoryChart.setOption(categoryOption);
+
+            window.addEventListener('resize', function() {
+                revenueChart.resize();
+                categoryChart.resize();
+            });
+        });
+    </script>
+
+    <script id="form-interactions">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Radio button interactions
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Reset all
+                    radioButtons.forEach(rb => {
+                        const indicator = rb.parentElement.querySelector('div:last-child');
+                        indicator.classList.add('opacity-0');
+                    });
+                    
+                    // Show selected
+                    if (this.checked) {
+                        const indicator = this.parentElement.querySelector('div:last-child');
+                        indicator.classList.remove('opacity-0');
+                    }
+                });
+            });
+
+            // Checkbox interactions
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const box = this.parentElement.querySelector('div:nth-child(2)');
+                    const check = this.parentElement.querySelector('div:last-child');
+                    
+                    if (this.checked) {
+                        box.classList.remove('border-gray-300');
+                        box.classList.add('border-primary', 'bg-primary');
+                        check.classList.remove('opacity-0');
+                    } else {
+                        box.classList.add('border-gray-300');
+                        box.classList.remove('border-primary', 'bg-primary');
+                        check.classList.add('opacity-0');
+                    }
+                });
+            });
+
+            // Password visibility toggle
+            const passwordToggles = document.querySelectorAll('button[class*="absolute right-3"]');
+            passwordToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const input = this.parentElement.querySelector('input');
+                    const icon = this.querySelector('i');
+                    
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('ri-eye-line');
+                        icon.classList.add('ri-eye-off-line');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('ri-eye-off-line');
+                        icon.classList.add('ri-eye-line');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
 const User = require('../models/user');
-const VNPayService = require('../util/vnpay');
+
 const { sendOrderConfirmation, sendNewOrderNotification } = require('../util/email');
 const mongodb = require('mongodb'); // 👈 Thêm dòng này vào đây
 const fs = require('fs');
@@ -9,30 +9,79 @@ const { generateOrderPDF } = require('../util/pdf'); // Thêm import này
 const mongoose = require('mongoose'); // Thêm import này
 
 
-exports.getProducts = (req, res, next) => {
-    Product.fetchAll()
-        .then(products => {
-            res.render('shop', {
-                prods: products,
-                pageTitle: 'Phương Store | Danh sách sản phẩm',
-                path: '/products',
-                hasProducts: products.length > 0,
-                activeShop: true,
-                productCSS: true,
-                isAuthenticated: req.session.user ? true : false,
-                isAdmin: req.session.user && req.session.user.role === 'admin'
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).render('error', {
-                pageTitle: 'Lỗi | Phương Store',
-                path: '/error',
-                error: 'Không thể tải danh sách sản phẩm',
-                isAuthenticated: req.session.user ? true : false,
-                isAdmin: req.session.user && req.session.user.role === 'admin'
-            });
+exports.getProducts = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 12;
+        const skip = (page - 1) * limit;
+        const search = req.query.search || '';
+        const category = req.query.category || '';
+        const sort = req.query.sort || '';
+
+        // Build filter object
+        let filter = {};
+        if (search) {
+            filter.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
+            ];
+        }
+        if (category) {
+            filter.category = category;
+        }
+
+        // Build sort object
+        let sortObj = {};
+        switch (sort) {
+            case 'price_asc':
+                sortObj.price = 1;
+                break;
+            case 'price_desc':
+                sortObj.price = -1;
+                break;
+            case 'name_asc':
+                sortObj.title = 1;
+                break;
+            case 'name_desc':
+                sortObj.title = -1;
+                break;
+            default:
+                sortObj.createdAt = -1;
+        }
+
+        const products = await Product.find(filter)
+            .sort(sortObj)
+            .skip(skip)
+            .limit(limit);
+
+        const totalProducts = await Product.countDocuments(filter);
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        res.render('shop/product-list', {
+            products: products,
+            pageTitle: 'Sản phẩm - PetShop',
+            path: '/products',
+            currentPage: page,
+            totalPages: totalPages,
+            search: search,
+            category: category,
+            sort: sort,
+            hasProducts: products.length > 0,
+            activeShop: true,
+            productCSS: true,
+            isAuthenticated: req.session.user ? true : false,
+            isAdmin: req.session.user && req.session.user.role === 'admin'
         });
+    } catch (err) {
+        console.log(err);
+        res.status(500).render('error', {
+            pageTitle: 'Lỗi | PetShop',
+            path: '/error',
+            error: 'Không thể tải danh sách sản phẩm',
+            isAuthenticated: req.session.user ? true : false,
+            isAdmin: req.session.user && req.session.user.role === 'admin'
+        });
+    }
 };
 
 exports.getProduct = async (req, res, next) => {
@@ -54,7 +103,7 @@ exports.getProduct = async (req, res, next) => {
 
         res.render('shop/product-detail', {
             product: product,
-            pageTitle: `${product.title} | Phương Store`,
+            pageTitle: `${product.title} | PetShop`,
             path: '/products',
             relatedProducts: relatedProducts,
             hasRelatedProducts: relatedProducts.length > 0,
@@ -75,30 +124,32 @@ exports.getProduct = async (req, res, next) => {
     }
 };
 
-exports.getIndex = (req, res, next) => {
-    Product.fetchAll()
-        .then(products => {
-            res.render('index', {
-                prods: products,
-                pageTitle: 'Phương Store | Trang chủ',
-                path: '/',
-                hasProducts: products.length > 0,
-                activeShop: true,
-                productCSS: true,
-                isAuthenticated: req.session.user ? true : false,
-                isAdmin: req.session.user && req.session.user.role === 'admin'
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).render('error', {
-                pageTitle: 'Lỗi | Phương Store',
-                path: '/error',
-                error: 'Không thể tải trang chủ',
-                isAuthenticated: req.session.user ? true : false,
-                isAdmin: req.session.user && req.session.user.role === 'admin'
-            });
+exports.getIndex = async (req, res, next) => {
+    try {
+        // Get featured products (latest 8 products)
+        const allProducts = await Product.find();
+        const products = allProducts.slice(0, 8);
+
+        res.render('shop/index', {
+            products: products,
+            pageTitle: 'PetShop - Cửa hàng thú cưng',
+            path: '/',
+            hasProducts: products.length > 0,
+            activeShop: true,
+            productCSS: true,
+            isAuthenticated: req.session.user ? true : false,
+            isAdmin: req.session.user && req.session.user.role === 'admin'
         });
+    } catch (err) {
+        console.log(err);
+        res.status(500).render('error', {
+            pageTitle: 'Lỗi | PetShop',
+            path: '/error',
+            error: 'Không thể tải trang chủ',
+            isAuthenticated: req.session.user ? true : false,
+            isAdmin: req.session.user && req.session.user.role === 'admin'
+        });
+    }
 };
 
 
@@ -185,10 +236,27 @@ exports.postCart = async (req, res, next) => {
 
         try {
             await user.addToCart(product, quantity);
+            
+            // Check if this is an AJAX request
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                const cart = await user.getCart();
+                return res.json({
+                    success: true,
+                    message: 'Đã thêm sản phẩm vào giỏ hàng',
+                    cartCount: cart.items.reduce((total, item) => total + item.quantity, 0)
+                });
+            }
+            
             res.redirect('/cart');
         } catch (err) {
             // Nếu lỗi liên quan đến số lượng tồn kho, hiển thị thông báo lỗi
             if (err.message.includes('Số lượng vượt quá tồn kho')) {
+                if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                    return res.status(400).json({
+                        success: false,
+                        message: err.message
+                    });
+                }
                 return res.status(400).render('error', {
                     pageTitle: 'Lỗi',
                     path: '/error',
@@ -295,10 +363,17 @@ exports.postCartUpdateQuantity = async (req, res, next) => {
 
 exports.postOrder = async (req, res, next) => {
   try {
-    const { paymentMethod, name, phone, address, note, vnpayMethod, vnpayBank } = req.body;
+    if (!req.session.user || !req.session.user._id) {
+      return res.status(401).json({
+        success: false,
+        message: 'Vui lòng đăng nhập để đặt hàng'
+      });
+    }
+
+    const { paymentMethod, name, phone, email, address, note } = req.body;
     
     // Validate payment method
-    const validPaymentMethods = ['cod', 'vnpay', 'bank_transfer', 'e_wallet'];
+    const validPaymentMethods = ['cod', 'vnpay'];
     if (!validPaymentMethods.includes(paymentMethod)) {
       return res.status(400).json({
         success: false,
@@ -306,9 +381,12 @@ exports.postOrder = async (req, res, next) => {
       });
     }
 
-    const userData = await User.findById(req.user._id);
+    const userData = await User.findById(req.session.user._id);
     if (!userData) {
-      return res.redirect('/login');
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy thông tin người dùng'
+      });
     }
     
     const user = new User(userData.name, userData.email, userData.role);
@@ -318,7 +396,10 @@ exports.postOrder = async (req, res, next) => {
     const cart = await user.getCart();
     
     if (!cart.items || cart.items.length === 0) {
-      return res.redirect('/cart');
+      return res.status(400).json({
+        success: false,
+        message: 'Giỏ hàng trống'
+      });
     }
 
     const products = cart.items.map(item => {
@@ -341,71 +422,40 @@ exports.postOrder = async (req, res, next) => {
     const shippingFee = subtotal >= 500000 ? 0 : 30000;
     const totalAmount = subtotal + shippingFee;
 
-    const order = new Order({
-      user: {
-        userId: req.user._id,
+    const order = new Order(
+      req.session.user._id,
+      products,
+      totalAmount,
+      {
         name: name,
         phone: phone,
+        email: email || req.session.user.email,
         address: address
       },
-      products: products,
-      totalAmount: totalAmount,
-      shippingFee: shippingFee,
-      paymentMethod: paymentMethod,
-      paymentStatus: 'pending',
-      orderStatus: 'pending',
-      note: note || '',
-      orderDate: new Date()
-    });
+      paymentMethod
+    );
+    order.shippingFee = shippingFee;
+    order.paymentStatus = 'pending';
+    order.orderStatus = 'pending';
+    order.note = note || '';
+    order.orderDate = new Date();
 
-    await order.save();
+    const savedOrder = await order.save();
 
     // Handle different payment methods
-    if (paymentMethod === 'vnpay') {
-      const vnpayService = new VNPayService();
-      
-      // Create VNPay payment URL
-      const paymentData = {
-        amount: totalAmount,
-        orderInfo: `Thanh toan don hang ${order._id.toString()}`,
-        orderType: 'other',
-        bankCode: '',
-        locale: 'vn',
-        ipAddr: req.ip || req.connection.remoteAddress || '127.0.0.1'
-      };
-      
-      console.log('PaymentData being sent to VNPay:', JSON.stringify(paymentData, null, 2));
-      
-      const paymentResult = vnpayService.createPayment(paymentData);
-      console.log('VNPay payment result:', JSON.stringify(paymentResult, null, 2));
-      
-      if (paymentResult.success) {
-        // Store order ID in session for return handling
-        req.session.pendingOrderId = order._id;
-        
-        console.log('Redirecting to VNPay URL:', paymentResult.paymentUrl);
-        // Redirect trực tiếp đến VNPay
-        return res.redirect(paymentResult.paymentUrl);
-      } else {
-        console.error('VNPay payment creation failed:', paymentResult.error);
-        return res.status(500).json({
-          success: false,
-          message: 'Không thể tạo liên kết thanh toán VNPay: ' + (paymentResult.error || 'Unknown error')
-        });
-      }
-    } else if (paymentMethod === 'cod') {
+    if (paymentMethod === 'cod') {
       // COD - Cash on Delivery
-      order.paymentStatus = 'pending';
-      order.orderStatus = 'confirmed';
-      await order.save();
+      await Order.updateStatus(savedOrder._id, 'confirmed');
+      await Order.updatePaymentStatus(savedOrder._id, 'pending');
       
-      // Clear cart and redirect
+      // Clear cart
       await user.clearCart();
       
-      // Set success message
-      req.session.successMessage = 'Đơn hàng đã được tạo thành công! Bạn sẽ thanh toán khi nhận hàng.';
-      
-      return res.redirect('/orders');
+      return res.json({
+        success: true,
+        message: 'Đơn hàng đã được tạo thành công! Bạn sẽ thanh toán khi nhận hàng.',
+        orderId: savedOrder._id
+      });
     } else {
       // Invalid payment method
       return res.status(400).json({
@@ -415,7 +465,10 @@ exports.postOrder = async (req, res, next) => {
     }
   } catch (error) {
     console.error('Error creating order:', error);
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Có lỗi xảy ra khi tạo đơn hàng: ' + error.message
+    });
   }
 };
 
@@ -575,27 +628,40 @@ exports.getDownloadInvoice = async (req, res, next) => {
         });
     }
 };
-exports.getCheckout = (req, res, next) => {
-    const cart = req.session.cart || { items: [] };
+exports.getCheckout = async (req, res, next) => {
+    try {
+        if (!req.session.user || !req.session.user._id) {
+            return res.redirect('/create-default-user');
+        }
 
-    const products = cart.items.map(item => {
-        return {
-            _id: item._id,
-            title: item.title,
-            price: item.price,
-            quantity: item.quantity
-        };
-    });
+        const userData = await User.findById(req.session.user._id);
+        if (!userData) {
+            return res.redirect('/create-default-user');
+        }
 
-    const totalPrice = cart.items.reduce((total, item) => {
-        return total + item.price * item.quantity;
-    }, 0);
+        const user = new User(userData.name, userData.email, userData.role);
+        user._id = new mongodb.ObjectId(userData._id);
+        user.cart = userData.cart || { items: [], totalPrice: 0 };
 
-    res.render('shop/checkout', {
-        pageTitle: 'Xác nhận đơn hàng',
-        path: '/checkout',
-        products,
-        totalPrice
-    });
+        const cart = await user.getCart();
+
+        res.render('shop/checkout', {
+            pageTitle: 'Xác nhận đơn hàng',
+            path: '/checkout',
+            products: cart.items || [],
+            totalPrice: cart.totalPrice || 0,
+            isAuthenticated: req.session.user ? true : false,
+            isAdmin: req.session.user && req.session.user.role === 'admin'
+        });
+    } catch (err) {
+        console.error('Lỗi khi tải trang checkout:', err);
+        res.status(500).render('error', {
+            pageTitle: 'Lỗi',
+            path: '/error',
+            error: 'Không thể tải trang thanh toán',
+            isAuthenticated: req.session.user ? true : false,
+            isAdmin: req.session.user && req.session.user.role === 'admin'
+        });
+    }
 };
 

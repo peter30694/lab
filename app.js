@@ -28,8 +28,11 @@ app.set('views', 'views')
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
+const vnpayRoutes = require('./routes/vnpay');
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json()); // Thêm middleware để parse JSON
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Cấu hình session
@@ -73,6 +76,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/admin', adminRoutes);
+app.use('/vnpay', vnpayRoutes);
+
 app.use(authRoutes);
 app.use(shopRoutes);
 

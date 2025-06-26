@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'rgba(87, 181, 231, 1)',
+                        'primary-dark': 'rgba(67, 161, 211, 1)'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <%- include('../partials/header') %>
+
+    <!-- Payment Result Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                    <% if (success) { %>
+                        <!-- Success Icon -->
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="ri-check-line text-4xl text-green-600"></i>
+                        </div>
+                        
+                        <h1 class="text-3xl font-bold text-gray-800 mb-4">Thanh toán thành công!</h1>
+                        <p class="text-gray-600 mb-6"><%= message %></p>
+                        
+                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                                <div>
+                                    <span class="text-sm text-gray-500">Mã đơn hàng:</span>
+                                    <p class="font-semibold text-gray-800">#<%= orderId %></p>
+                                </div>
+                                <% if (typeof transactionNo !== 'undefined') { %>
+                                <div>
+                                    <span class="text-sm text-gray-500">Mã giao dịch:</span>
+                                    <p class="font-semibold text-gray-800"><%= transactionNo %></p>
+                                </div>
+                                <% } %>
+                                <% if (typeof amount !== 'undefined') { %>
+                                <div>
+                                    <span class="text-sm text-gray-500">Số tiền:</span>
+                                    <p class="font-semibold text-green-600"><%= amount.toLocaleString('vi-VN') %>đ</p>
+                                </div>
+                                <% } %>
+                                <div>
+                                    <span class="text-sm text-gray-500">Thời gian:</span>
+                                    <p class="font-semibold text-gray-800"><%= new Date().toLocaleString('vi-VN') %></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="/orders" class="btn-primary px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                                <i class="ri-file-list-line mr-2"></i>
+                                Xem đơn hàng
+                            </a>
+                            <a href="/" class="btn-secondary px-6 py-3 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300">
+                                <i class="ri-home-line mr-2"></i>
+                                Về trang chủ
+                            </a>
+                        </div>
+                    <% } else { %>
+                        <!-- Error Icon -->
+                        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="ri-close-line text-4xl text-red-600"></i>
+                        </div>
+                        
+                        <h1 class="text-3xl font-bold text-gray-800 mb-4">Thanh toán thất bại!</h1>
+                        <p class="text-gray-600 mb-6"><%= message %></p>
+                        
+                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                            <div class="text-left">
+                                <div class="mb-2">
+                                    <span class="text-sm text-gray-500">Mã đơn hàng:</span>
+                                    <p class="font-semibold text-gray-800">#<%= orderId %></p>
+                                </div>
+                                <div>
+                                    <span class="text-sm text-gray-500">Thời gian:</span>
+                                    <p class="font-semibold text-gray-800"><%= new Date().toLocaleString('vi-VN') %></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="/cart" class="btn-primary px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                                <i class="ri-shopping-cart-line mr-2"></i>
+                                Thử lại thanh toán
+                            </a>
+                            <a href="/" class="btn-secondary px-6 py-3 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300">
+                                <i class="ri-home-line mr-2"></i>
+                                Về trang chủ
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <!-- Support Info -->
+                <div class="mt-8 text-center">
+                    <p class="text-gray-600 mb-2">Cần hỗ trợ? Liên hệ với chúng tôi:</p>
+                    <div class="flex justify-center space-x-6">
+                        <a href="tel:1900123456" class="text-blue-600 hover:text-blue-800 transition-colors">
+                            <i class="ri-phone-line mr-1"></i>
+                            1900 123 456
+                        </a>
+                        <a href="mailto:support@petshop.com" class="text-blue-600 hover:text-blue-800 transition-colors">
+                            <i class="ri-mail-line mr-1"></i>
+                            support@petshop.com
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <%- include('../partials/footer') %>
+    
+    <!-- Custom JavaScript -->
+    <script src="/js/main.js"></script>
+</body>
+</html>

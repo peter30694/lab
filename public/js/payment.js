@@ -47,9 +47,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Highlight card được chọn
-        const selectedCard = selectedInput.closest('.payment-card');
-        if (selectedCard) {
-            selectedCard.classList.add('selected');
+        if (selectedInput && typeof selectedInput.closest === 'function') {
+            const selectedCard = selectedInput.closest('.payment-card');
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+        } else {
+            // Fallback: tìm parent element
+            let parent = selectedInput;
+            while (parent && parent.parentElement) {
+                parent = parent.parentElement;
+                if (parent.classList && parent.classList.contains('payment-card')) {
+                    parent.classList.add('selected');
+                    break;
+                }
+            }
         }
     }
 
@@ -92,29 +104,85 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Xử lý submit form
-    const checkoutForm = document.querySelector('form[action="/orders"]');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
-            if (!validatePaymentMethod()) {
-                e.preventDefault();
-                return false;
-            }
-            
-            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
-            
-            // Hiển thị loading
-            const submitBtn = this.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                
-                if (selectedPayment && selectedPayment.value === 'vnpay') {
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chuyển đến VNPay...';
-                } else if (selectedPayment && selectedPayment.value === 'cod') {
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý đơn hàng...';
+    window.processOrder = function() {
+        const form = document.getElementById('checkoutForm');
+        const formData = new FormData(form);
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+        
+        // Validate form
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        if (!validatePaymentMethod()) {
+            return;
+        }
+        
+        // Prepare order data
+        const orderData = {
+            name: formData.get('name'),
+            phone: formData.get('phone'),
+            email: formData.get('email'),
+            address: formData.get('address'),
+            paymentMethod: paymentMethod
+        };
+        
+        // Show loading
+        const button = document.querySelector('button[onclick="processOrder()"]');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+        button.disabled = true;
+        
+        if (paymentMethod === 'vnpay') {
+            // VNPay payment
+            fetch('/vnpay/create-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.paymentUrl;
                 } else {
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+                    alert('Có lỗi xảy ra: ' + data.message);
+                    button.innerHTML = originalText;
+                    button.disabled = false;
                 }
-            }
-        });
-    }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi tạo thanh toán');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        } else {
+            // COD payment
+            fetch('/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/orders';
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Có lỗi xảy ra');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra: ' + error.message);
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
+    };
 });

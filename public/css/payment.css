@@ -172,20 +172,7 @@
     opacity: 0.9;
 }
 
-/* VNPay Card Form Styles */
-.vnpay-card-form {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 15px;
-}
 
-.vnpay-card-form h5 {
-    color: #495057;
-    margin-bottom: 20px;
-    font-weight: 600;
-}
 
 /* Card Form Header */
 .card-form-header {
@@ -483,9 +470,7 @@
         gap: 0;
     }
     
-    .vnpay-card-form {
-        padding: 15px;
-    }
+
     
     .expiry-group {
         gap: 8px;

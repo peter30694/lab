@@ -11,7 +11,7 @@
             <i class="fas fa-user-check"></i> Thông tin khách hàng
           </h2>
 
-          <form action="/orders" method="POST">
+          <form id="checkoutForm" action="/orders" method="POST">
             <!-- Họ tên -->
             <div class="mb-3">
               <label for="name" class="form-label">Họ và tên</label>
@@ -53,24 +53,26 @@
                         <i class="fas fa-truck fa-4x text-warning mb-3"></i>
                         <h4 class="text-warning">COD</h4>
                         <p class="text-muted mb-2">Thanh toán khi nhận hàng</p>
-                        <small class="text-info d-block"><i class="fas fa-hand-holding-usd"></i> Tiện lợi - Không cần trả trước</small>
-                        <small class="text-success d-block mt-1"><i class="fas fa-check-circle"></i> Kiểm tra hàng trước khi thanh toán</small>
+                        <small class="text-info d-block"><i class="fas fa-hand-holding-usd"></i> Tiện lợi - Không cần
+                          trả trước</small>
+                        <small class="text-success d-block mt-1"><i class="fas fa-check-circle"></i> Kiểm tra hàng trước
+                          khi thanh toán</small>
                       </label>
                     </div>
                   </div>
                 </div>
 
-                <!-- VNPay -->
+                <!-- VNPay - Thanh toán online -->
                 <div class="col-md-6 col-lg-5 mb-3">
                   <div class="card payment-method border-primary h-100">
                     <div class="card-body text-center">
                       <input type="radio" class="form-check-input" id="vnpay" name="paymentMethod" value="vnpay">
                       <label class="form-check-label w-100" for="vnpay">
-                        <i class="fas fa-credit-card fa-4x text-primary mb-3"></i>
+                        <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png" alt="VNPay" class="mb-3" style="height: 60px; object-fit: contain;">
                         <h4 class="text-primary">VNPay</h4>
                         <p class="text-muted mb-2">Thanh toán trực tuyến</p>
-                        <small class="text-info d-block"><i class="fas fa-shield-alt"></i> Bảo mật cao - Nhanh chóng</small>
-                        <small class="text-success d-block mt-1"><i class="fas fa-bolt"></i> Xử lý ngay lập tức</small>
+                        <small class="text-info d-block"><i class="fas fa-shield-alt"></i> An toàn - Bảo mật cao</small>
+                        <small class="text-success d-block mt-1"><i class="fas fa-bolt"></i> Nhanh chóng - Tiện lợi</small>
                       </label>
                     </div>
                   </div>
@@ -86,14 +88,20 @@
                     <hr>
                     <div class="row">
                       <div class="col-md-6">
-                        <p class="mb-2"><i class="fas fa-info-circle text-warning"></i> <strong>Cách thức:</strong> Thanh toán bằng tiền mặt khi nhận hàng</p>
-                        <p class="mb-2"><i class="fas fa-clock text-warning"></i> <strong>Thời gian giao:</strong> 2-3 ngày làm việc</p>
-                        <p class="mb-2"><i class="fas fa-money-bill-wave text-warning"></i> <strong>Phí ship:</strong> 30.000đ (miễn phí với đơn > 500.000đ)</p>
+                        <p class="mb-2"><i class="fas fa-info-circle text-warning"></i> <strong>Cách thức:</strong>
+                          Thanh toán bằng tiền mặt khi nhận hàng</p>
+                        <p class="mb-2"><i class="fas fa-clock text-warning"></i> <strong>Thời gian giao:</strong> 2-3
+                          ngày làm việc</p>
+                        <p class="mb-2"><i class="fas fa-money-bill-wave text-warning"></i> <strong>Phí ship:</strong>
+                          30.000đ (miễn phí với đơn > 500.000đ)</p>
                       </div>
                       <div class="col-md-6">
-                        <p class="mb-2"><i class="fas fa-check-circle text-success"></i> <strong>Ưu điểm:</strong> Kiểm tra hàng trước khi thanh toán</p>
-                        <p class="mb-2"><i class="fas fa-handshake text-success"></i> <strong>An toàn:</strong> Không cần thanh toán trước</p>
-                        <p class="mb-0"><i class="fas fa-exchange-alt text-success"></i> <strong>Đổi trả:</strong> Dễ dàng nếu không hài lòng</p>
+                        <p class="mb-2"><i class="fas fa-check-circle text-success"></i> <strong>Ưu điểm:</strong> Kiểm
+                          tra hàng trước khi thanh toán</p>
+                        <p class="mb-2"><i class="fas fa-handshake text-success"></i> <strong>An toàn:</strong> Không
+                          cần thanh toán trước</p>
+                        <p class="mb-0"><i class="fas fa-exchange-alt text-success"></i> <strong>Đổi trả:</strong> Dễ
+                          dàng nếu không hài lòng</p>
                       </div>
                     </div>
                   </div>
@@ -102,38 +110,124 @@
                 <!-- VNPay Details -->
                 <div id="vnpay-details" class="payment-detail" style="display: none;">
                   <div class="alert alert-primary border-primary">
-                    <h5 class="alert-heading"><i class="fas fa-credit-card"></i> Thanh toán VNPay</h5>
+                    <h5 class="alert-heading"><i class="fas fa-credit-card"></i> Thanh toán qua VNPay</h5>
                     <hr>
-                    <div class="row mb-3">
+                    <div class="row">
                       <div class="col-md-6">
-                        <p class="mb-2"><i class="fas fa-shield-alt text-primary"></i> <strong>Bảo mật:</strong> Thanh toán trực tuyến an toàn</p>
-                        <p class="mb-2"><i class="fas fa-university text-primary"></i> <strong>Hỗ trợ:</strong> ATM, Visa, MasterCard, JCB</p>
-                        <p class="mb-0"><i class="fas fa-bolt text-primary"></i> <strong>Xử lý:</strong> Ngay lập tức - Không phí giao dịch</p>
+                        <p class="mb-2"><i class="fas fa-info-circle text-primary"></i> <strong>Cách thức:</strong>
+                          Thanh toán trực tuyến qua cổng VNPay</p>
+                        <p class="mb-2"><i class="fas fa-clock text-primary"></i> <strong>Thời gian xử lý:</strong> Tức thì</p>
+                        <p class="mb-2"><i class="fas fa-money-bill-wave text-primary"></i> <strong>Phí giao dịch:</strong>
+                          Miễn phí</p>
                       </div>
                       <div class="col-md-6">
-                        <p class="mb-2"><i class="fas fa-lock text-success"></i> <strong>Mã hóa:</strong> SSL 256-bit</p>
-                        <p class="mb-2"><i class="fas fa-mobile-alt text-success"></i> <strong>Tiện lợi:</strong> Thanh toán mọi lúc mọi nơi</p>
-                        <p class="mb-0"><i class="fas fa-receipt text-success"></i> <strong>Hóa đơn:</strong> Tự động gửi email</p>
+                        <p class="mb-2"><i class="fas fa-shield-alt text-success"></i> <strong>Bảo mật:</strong> Mã hóa
+                          SSL 256-bit</p>
+                        <p class="mb-2"><i class="fas fa-bolt text-success"></i> <strong>Nhanh chóng:</strong> Xác nhận
+                          thanh toán ngay lập tức</p>
+                        <p class="mb-0"><i class="fas fa-university text-success"></i> <strong>Hỗ trợ:</strong> Tất cả
+                          ngân hàng trong nước</p>
                       </div>
-                    </div>
-                    
-                    <div class="bg-light p-3 rounded">
-                      <p class="mb-2 text-center"><strong><i class="fas fa-info-circle"></i> Lưu ý quan trọng:</strong></p>
-                      <p class="mb-1 text-center">Khi chọn VNPay, bạn sẽ được chuyển hướng đến trang thanh toán VNPay</p>
-                      <p class="mb-0 text-center text-muted">Vui lòng hoàn tất thanh toán trong vòng 15 phút</p>
                     </div>
                   </div>
                 </div>
+
+
               </div>
             </div>
 
             <!-- Nút đặt hàng -->
-            <button type="submit" class="btn btn-success btn-lg">
+            <button type="button" onclick="processOrder()" class="btn btn-success btn-lg">
               <i class="fas fa-check-circle"></i> Xác nhận đặt hàng
             </button>
           </form>
         </div>
       </main>
 
+      <script>
+        // Đảm bảo hàm processOrder được định nghĩa
+        function processOrder() {
+          const form = document.getElementById('checkoutForm');
+          const formData = new FormData(form);
+          const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+          
+          // Validate form
+          if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+          }
+          
+          if (!paymentMethod) {
+            alert('Vui lòng chọn phương thức thanh toán!');
+            return;
+          }
+          
+          // Prepare order data
+          const orderData = {
+            name: formData.get('name'),
+            phone: formData.get('phone'),
+            email: formData.get('email'),
+            address: formData.get('address'),
+            paymentMethod: paymentMethod
+          };
+          
+          // Show loading
+          const button = document.querySelector('button[onclick="processOrder()"]');
+          const originalText = button.innerHTML;
+          button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+          button.disabled = true;
+          
+          if (paymentMethod === 'vnpay') {
+            // VNPay payment
+            fetch('/vnpay/create-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                window.location.href = data.paymentUrl;
+              } else {
+                alert('Có lỗi xảy ra: ' + data.message);
+                button.innerHTML = originalText;
+                button.disabled = false;
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Có lỗi xảy ra khi tạo thanh toán');
+              button.innerHTML = originalText;
+              button.disabled = false;
+            });
+          } else {
+            // COD payment
+            fetch('/orders', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(orderData)
+            })
+            .then(response => {
+              if (response.ok) {
+                window.location.href = '/orders';
+              } else {
+                return response.json().then(data => {
+                  throw new Error(data.message || 'Có lỗi xảy ra');
+                });
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Có lỗi xảy ra: ' + error.message);
+              button.innerHTML = originalText;
+              button.disabled = false;
+            });
+          }
+        }
+      </script>
       <script src="/js/payment.js"></script>
       <%- include('../includes/end.ejs') %>

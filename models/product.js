@@ -71,6 +71,22 @@ module.exports = class Product {
         }
     }
 
+    static async find(filter = {}) {
+        try {
+            const db = getDb();
+            console.log('Đang tìm sản phẩm với filter:', filter);
+            const products = await db.collection('products')
+                .find(filter)
+                .sort({ createdAt: -1 })
+                .toArray();
+            console.log('Số sản phẩm tìm thấy:', products.length);
+            return products;
+        } catch (err) {
+            console.error('Lỗi khi tìm sản phẩm:', err);
+            throw err;
+        }
+    }
+
     static async findById(productId) {
         try {
             const db = getDb();

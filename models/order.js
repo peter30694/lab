@@ -34,8 +34,7 @@ class Order {
                 return 'awaiting_payment'; // Chờ chuyển khoản
             case 'credit':
                 return 'processing'; // Đang xử lý thanh toán thẻ
-            case 'vnpay':
-                return 'processing'; // Đang xử lý thanh toán VNPay
+
             default:
                 return 'pending';
         }
@@ -49,7 +48,7 @@ class Order {
             'bank_transfer': 'Chuyển khoản QR Code',
             'ewallet': 'Ví điện tử',
             'credit': 'Thẻ tín dụng/ghi nợ',
-            'vnpay': 'VNPay'
+
         };
         return methods[this.paymentMethod] || 'Không xác định';
     }
@@ -142,7 +141,7 @@ class Order {
                 if (paymentData.paidAt) updateData.paidAt = paymentData.paidAt;
                 if (paymentData.failedAt) updateData.failedAt = paymentData.failedAt;
                 if (paymentData.failureReason) updateData.failureReason = paymentData.failureReason;
-                if (paymentData.vnpayData) updateData.vnpayData = paymentData.vnpayData;
+
             }
 
             return await db.collection('orders').updateOne(
@@ -211,7 +210,7 @@ class Order {
             'bank_transfer': 'Chuyển khoản QR Code',
             'ewallet': 'Ví điện tử',
             'credit': 'Thẻ tín dụng/ghi nợ',
-            'vnpay': 'VNPay'
+
         };
         return methods[this.paymentMethod] || 'Không xác định';
     }

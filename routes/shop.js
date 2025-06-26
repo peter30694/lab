@@ -9,7 +9,7 @@ const products = require('./admin').products;
 
 const shopController = require('../controllers/shop');
 
-const vnpayController = require('../controllers/vnpay');
+
 const { sendOrderConfirmation } = require('../util/email');
 const User = require('../models/user');
 const isAuth = require('../middleware/is-auth');
@@ -73,6 +73,7 @@ router.get('/products/:productId', shopController.getProduct);
 // Giỏ hàng - cần đăng nhập
 router.get('/cart', isAuth, shopController.getCart);
 router.post('/cart', isAuth, shopController.postCart);
+router.post('/cart/add', isAuth, shopController.postCart); // AJAX endpoint
 router.post('/cart-delete-item', isAuth, shopController.postCartDeleteProduct);
 router.post('/cart-update-quantity', isAuth, shopController.postCartUpdateQuantity);
 
@@ -83,13 +84,10 @@ router.get('/orders', isAuth, shopController.getOrders);
 // Route tải xuống hóa đơn cho người dùng
 router.get('/download-invoice/:orderId', isAuth, shopController.getDownloadInvoice);
 
-router.get('/checkout', shopController.getCheckout);
+router.get('/checkout', isAuth, shopController.getCheckout);
 
 
 
-// Routes cho VNPay payment
-router.get('/vnpay/return', vnpayController.handleVNPayReturn);
-router.get('/vnpay/ipn', vnpayController.handleVNPayIPN);
-router.get('/vnpay/status/:orderId', vnpayController.checkVNPayPaymentStatus);
+
 
 module.exports = router;
