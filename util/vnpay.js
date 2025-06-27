@@ -3,6 +3,14 @@ const moment = require('moment');
 
 class VNPay {
     constructor() {
+        // Kiểm tra environment variables
+        if (!process.env.VNPAY_TMN_CODE || !process.env.VNPAY_HASH_SECRET) {
+            throw new Error('VNPay configuration missing: TMN_CODE or HASH_SECRET not found');
+        }
+        if (!process.env.VNPAY_URL || !process.env.VNPAY_RETURN_URL) {
+            throw new Error('VNPay configuration missing: URL or RETURN_URL not found');
+        }
+        
         this.vnp_TmnCode = process.env.VNPAY_TMN_CODE;
         this.vnp_HashSecret = process.env.VNPAY_HASH_SECRET;
         this.vnp_Url = process.env.VNPAY_URL;
@@ -12,6 +20,21 @@ class VNPay {
 
     // Tạo URL thanh toán
     createPaymentUrl(orderId, amount, orderInfo, ipAddr, locale = 'vn') {
+        // Validate inputs
+        if (!orderId || typeof orderId !== 'string' || orderId.trim().length === 0) {
+            throw new Error('Order ID không hợp lệ');
+        }
+        if (!orderInfo || typeof orderInfo !== 'string' || orderInfo.length > 255) {
+            throw new Error('Thông tin đơn hàng không hợp lệ (tối đa 255 ký tự)');
+        }
+        if (!ipAddr || typeof ipAddr !== 'string') {
+            throw new Error('IP Address không hợp lệ');
+        }
+        // Kiểm tra số tiền hợp lệ
+        if (!amount || typeof amount !== 'number' || amount < 5000 || amount >= 1000000000) {
+            throw new Error('Số tiền không hợp lệ. Phải từ 5,000 đến dưới 1 tỷ VND');
+        }
+
         const createDate = moment().format('YYYYMMDDHHmmss');
 
         const vnp_Params = {
@@ -23,7 +46,7 @@ class VNPay {
             vnp_TxnRef: orderId,
             vnp_OrderInfo: orderInfo,
             vnp_OrderType: 'other',
-            vnp_Amount: amount * 100,
+            vnp_Amount: amount * 100, // Đơn vị: x100
             vnp_ReturnUrl: this.vnp_ReturnUrl,
             vnp_IpAddr: ipAddr,
             vnp_CreateDate: createDate
@@ -49,15 +72,36 @@ class VNPay {
 
     // Xác thực chữ ký từ VNPay (khi return)
     verifyReturnUrl(vnp_Params) {
-        const receivedHash = vnp_Params['vnp_SecureHash'];
-        delete vnp_Params['vnp_SecureHash'];
-        delete vnp_Params['vnp_SecureHashType'];
+        console.log('=== VNPay Signature Verification Debug ===');
+        
+        // Clone object để không modify object gốc
+        const params = { ...vnp_Params };
+        const receivedHash = params['vnp_SecureHash'];
+        
+        console.log('Received hash:', receivedHash);
+        
+        // Validate required fields
+        if (!receivedHash) {
+            console.log('❌ Missing vnp_SecureHash');
+            throw new Error('Thiếu vnp_SecureHash trong response');
+        }
+        
+        delete params['vnp_SecureHash'];
+        delete params['vnp_SecureHashType'];
 
-        const sortedParams = this.sortObject(vnp_Params);
+        const sortedParams = this.sortObject(params);
+        console.log('Sorted params for signing:', sortedParams);
+        
         const signData = new URLSearchParams(sortedParams).toString();
+        console.log('Sign data string:', signData);
+        console.log('Hash secret (first 10 chars):', this.vnp_HashSecret.substring(0, 10) + '...');
 
         const hmac = crypto.createHmac('sha512', this.vnp_HashSecret);
         const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+        
+        console.log('Generated hash:', signed);
+        console.log('Hashes match:', signed === receivedHash);
+        console.log('=== End Signature Verification Debug ===');
 
         return signed === receivedHash;
     }

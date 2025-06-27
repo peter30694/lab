@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Hiển thị chi tiết COD ban đầu
     showPaymentDetails('cod');
 
@@ -17,10 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePaymentSelection() {
         const selectedMethod = this.value;
         console.log('Selected payment method:', selectedMethod);
-        
+
         // Hiển thị chi tiết thanh toán tương ứng
         showPaymentDetails(selectedMethod);
-        
+
         // Cập nhật visual selection
         updateCardSelection(this);
     }
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         allDetails.forEach(detail => {
             detail.style.display = 'none';
         });
-        
+
         // Hiển thị chi tiết của phương thức được chọn
         const selectedDetail = document.getElementById(method + '-details');
         if (selectedDetail) {
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         allCards.forEach(card => {
             card.classList.remove('selected');
         });
-        
+
         // Highlight card được chọn
         if (selectedInput && typeof selectedInput.closest === 'function') {
             const selectedCard = selectedInput.closest('.payment-card');
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Xử lý click vào card để chọn radio button
     const paymentCards = document.querySelectorAll('.payment-method');
     paymentCards.forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function () {
             const radio = this.querySelector('input[type="radio"]');
             if (radio) {
                 radio.checked = true;
@@ -79,46 +79,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function validatePaymentMethod() {
         const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
-        
+
         if (!selectedPayment) {
             alert('Vui lòng chọn phương thức thanh toán!');
             return false;
         }
-        
+
         const paymentMethod = selectedPayment.value;
-        
+
         // Kiểm tra phương thức thanh toán hợp lệ
         if (paymentMethod !== 'cod' && paymentMethod !== 'vnpay') {
             alert('Phương thức thanh toán không hợp lệ!');
             return false;
         }
-        
+
         return true;
     }
 
     // Khởi tạo trạng thái ban đầu
     const defaultSelected = document.querySelector('input[name="paymentMethod"]:checked');
     if (defaultSelected && defaultSelected.value === 'cod') {
-        updatePaymentSelection();
-        showPaymentDetail(codDetails);
+        updatePaymentSelection(); // đủ rồi
     }
 
+
     // Xử lý submit form
-    window.processOrder = function() {
+    window.processOrder = function () {
         const form = document.getElementById('checkoutForm');
         const formData = new FormData(form);
         const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
-        
+
         // Validate form
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
         }
-        
+
         if (!validatePaymentMethod()) {
             return;
         }
-        
+
         // Prepare order data
         const orderData = {
             name: formData.get('name'),
@@ -127,13 +127,13 @@ document.addEventListener('DOMContentLoaded', function() {
             address: formData.get('address'),
             paymentMethod: paymentMethod
         };
-        
+
         // Show loading
         const button = document.querySelector('button[onclick="processOrder()"]');
         const originalText = button.innerHTML;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
         button.disabled = true;
-        
+
         if (paymentMethod === 'vnpay') {
             // VNPay payment
             fetch('/vnpay/create-payment', {
@@ -143,22 +143,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(orderData)
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = data.paymentUrl;
-                } else {
-                    alert('Có lỗi xảy ra: ' + data.message);
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.paymentUrl;
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tạo thanh toán');
                     button.innerHTML = originalText;
                     button.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi tạo thanh toán');
-                button.innerHTML = originalText;
-                button.disabled = false;
-            });
+                });
         } else {
             // COD payment
             fetch('/orders', {
@@ -168,21 +168,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(orderData)
             })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/orders';
-                } else {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Có lỗi xảy ra');
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra: ' + error.message);
-                button.innerHTML = originalText;
-                button.disabled = false;
-            });
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/orders';
+                    } else {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Có lỗi xảy ra');
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra: ' + error.message);
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                });
         }
     };
 });
