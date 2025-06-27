@@ -8,8 +8,23 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 
 const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
+const { notFoundHandler, errorHandler, asyncHandler } = require('./middleware/errorHandler');
+const validationMiddleware = require('./middleware/validation');
+const { logger, requestLogger } = require('./util/logger');
 
 const app = express();
+
+// Bắt lỗi uncaught exception
+process.on('uncaughtException', (err) => {
+    logger.error('Uncaught Exception', err, { fatal: true });
+    process.exit(1);
+});
+
+// Bắt lỗi unhandled rejection
+process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled Rejection', reason, { promise: promise.toString(), fatal: true });
+    process.exit(1);
+});
 
 // Cấu hình session store
 const store = new MongoDBStore({
@@ -18,7 +33,7 @@ const store = new MongoDBStore({
 });
 
 store.on('error', function (error) {
-    console.error('Lỗi session store:', error);
+    logger.error('Session store error', error);
 });
 
 //Khai báo engine
@@ -48,30 +63,38 @@ app.use(session({
 }));
 
 // Middleware để lấy thông tin user từ session
-app.use(async (req, res, next) => {
+app.use(asyncHandler(async (req, res, next) => {
     if (!req.session.user) {
         return next();
     }
-    try {
-        const user = await User.findById(req.session.user._id);
-        if (!user) {
-            return next();
-        }
-        req.user = user;
-        next();
-    } catch (err) {
-        console.error('Lỗi middleware user:', err);
-        next();
+    
+    const user = await User.findById(req.session.user._id);
+    if (!user) {
+        // Xóa session nếu user không tồn tại
+        req.session.destroy();
+        return next();
     }
-});
+    
+    req.user = user;
+    next();
+}));
 
+// Request logging middleware
+app.use(requestLogger);
+
+// Authentication middleware
 app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.user ? true : false;
     res.locals.isAdmin = req.session.user && req.session.user.role === 'admin';
-    console.log('Session:', req.session);
-    console.log('Session user:', req.session.user);
-    console.log('Is authenticated:', res.locals.isAuthenticated);
-    console.log('Is admin:', res.locals.isAdmin);
+    
+    logger.debug('Request authentication', {
+        url: req.url,
+        method: req.method,
+        isAuthenticated: res.locals.isAuthenticated,
+        isAdmin: res.locals.isAdmin,
+        userId: req.session.user ? req.session.user._id : null
+    });
+    
     next();
 });
 
@@ -81,55 +104,33 @@ app.use('/vnpay', vnpayRoutes);
 app.use(authRoutes);
 app.use(shopRoutes);
 
-// Xử lý lỗi 404
-app.use((req, res, next) => {
-    res.status(404).render('404', {
-        pageTitle: 'Page not found',
-        path: '/404',
-        isAuthenticated: req.session.user ? true : false
-    });
-});
-
-// Xử lý lỗi chung
-app.use((error, req, res, next) => {
-    console.error('Lỗi ứng dụng:', error);
-    res.status(500).render('error', {
-        pageTitle: 'Lỗi',
-        path: '/error',
-        error: 'Đã có lỗi xảy ra. Vui lòng thử lại sau.',
-        isAuthenticated: req.session.user ? true : false
-    });
-});
+// Middleware xử lý lỗi 404 và lỗi chung
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 // Kết nối MongoDB và khởi động server
 const startServer = async () => {
     try {
         await new Promise((resolve, reject) => {
             mongoConnect(() => {
-                console.log('Đã kết nối MongoDB thành công!');
+                logger.info('MongoDB connected successfully');
                 resolve();
             });
         });
 
-        app.listen(process.env.PORT || 3000, () => {
-            console.log(`Server đang chạy tại port ${process.env.PORT || 3000}`);
+        const port = process.env.PORT || 3000;
+        app.listen(port, () => {
+            logger.info(`Server started successfully`, { 
+                port,
+                environment: process.env.NODE_ENV || 'development',
+                timestamp: new Date().toISOString()
+            });
         });
     } catch (err) {
-        console.error('Lỗi khởi động server:', err);
+        logger.error('Failed to start server', err);
         process.exit(1);
     }
 };
-
-// Xử lý lỗi không bắt được
-process.on('uncaughtException', (err) => {
-    console.error('Lỗi không bắt được:', err);
-    process.exit(1);
-});
-
-process.on('unhandledRejection', (err) => {
-    console.error('Promise rejection không được xử lý:', err);
-    process.exit(1);
-});
 
 startServer();
 

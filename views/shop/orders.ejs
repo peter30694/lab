@@ -90,20 +90,17 @@
                                                                                 <%= product.title %>
                                                                             </h6>
                                                                             <small class="text-muted d-block">ID: <%=
-                                                                                    product._id.toString().substring(0,
-                                                                                    8) %></small>
+                                                                                    product._id ? product._id.toString().substring(0, 8) : 'N/A' %></small>
                                                                         </td>
                                                                         <td>
-                                                                            <%= product.price.toLocaleString('vi-VN') %>
+                                                                            <%= product.price ? product.price.toLocaleString('vi-VN') : '0' %>
                                                                                 ₫
                                                                         </td>
                                                                         <td class="text-center">
                                                                             <%= product.quantity %>
                                                                         </td>
                                                                         <td class="text-end fw-bold">
-                                                                            <%= (product.price *
-                                                                                product.quantity).toLocaleString('vi-VN')
-                                                                                %> ₫
+                                                                            <%= product.price && product.quantity ? (product.price * product.quantity).toLocaleString('vi-VN') : '0' %> ₫
                                                                         </td>
                                                                     </tr>
                                                                     <% }) %>

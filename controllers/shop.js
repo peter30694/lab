@@ -474,17 +474,28 @@ exports.postOrder = async (req, res, next) => {
 
 exports.getOrders = async (req, res, next) => {
     try {
+        console.log('🛒 Starting getOrders controller');
+        console.log('🛒 Session user:', req.session.user);
+        
         if (!req.session.user || !req.session.user._id) {
+            console.log('🛒 No session user, redirecting');
             return res.redirect('/create-default-user');
         }
 
+        console.log('🛒 Finding user by ID:', req.session.user._id);
         const user = await User.findById(req.session.user._id);
 
         if (!user) {
+            console.log('🛒 User not found, redirecting');
             return res.redirect('/create-default-user');
         }
 
+        console.log('🔍 DEBUG - Getting orders for user._id:', user._id, 'Type:', typeof user._id);
+        console.log('🔍 DEBUG - Session user._id:', req.session.user._id, 'Type:', typeof req.session.user._id);
+        
+        console.log('🛒 Finding orders for user');
         const orders = await Order.findByUserId(user._id);
+        console.log('🛒 Found orders:', orders.length);
 
         // ✅ Đảm bảo tất cả order đều có .items là array
         const cleanedOrders = orders.map(order => {
@@ -496,6 +507,7 @@ exports.getOrders = async (req, res, next) => {
             };
         });
 
+        console.log('🛒 Rendering orders page');
         res.render('shop/orders', {
             path: '/orders',
             pageTitle: 'Đơn hàng của bạn | Phương Store',
@@ -503,10 +515,13 @@ exports.getOrders = async (req, res, next) => {
             activeOrders: true,
             isAuthenticated: req.session.user ? true : false,
             isAdmin: req.session.user && req.session.user.role === 'admin',
-            success: req.query.success === 'true'
+            success: req.query.success === 'true',
+            error: null
         });
+        console.log('🛒 Orders page rendered successfully');
     } catch (err) {
-        console.log(err);
+        console.error('🚨 Error in getOrders:', err);
+        console.error('🚨 Error stack:', err.stack);
         res.status(500).render('error', {
             pageTitle: 'Lỗi | Phương Store',
             path: '/error',

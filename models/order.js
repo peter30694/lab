@@ -1,59 +1,121 @@
 const mongodb = require('mongodb');
 const { getDb } = require('../util/database');
+const { ValidationError, DatabaseError, NotFoundError } = require('../util/errors');
 
 class Order {
     constructor(userId, items, totalPrice, shippingInfo = {}, paymentMethod = 'cod') {
-        this.userId = userId; // ID của người đặt
-        this.items = items; // Danh sách sản phẩm trong giỏ
-        this.totalPrice = totalPrice; // Tổng tiền đơn hàng
-        this.status = 'pending'; // Trạng thái mặc định ban đầu
-        this.createdAt = new Date(); // Thời điểm tạo đơn
-        this.updatedAt = new Date(); // Lần cập nhật gần nhất
-
-        // ✅ Lưu thông tin giao hàng (từ form checkout)
-        this.shippingInfo = {
-            name: shippingInfo.name || '',
-            phone: shippingInfo.phone || '',
-            email: shippingInfo.email || '',
-            address: shippingInfo.address || ''
-        };
-
-        // ✅ Lưu thông tin phương thức thanh toán
-        this.paymentMethod = paymentMethod;
+        // Validate required fields
+        this.validateOrderData(userId, items, totalPrice, shippingInfo, paymentMethod);
+        
+        this.userId = userId;
+        this.items = this.validateAndNormalizeItems(items);
+        this.totalPrice = this.validatePrice(totalPrice);
+        this.shippingInfo = this.validateShippingInfo(shippingInfo);
+        this.paymentMethod = this.validatePaymentMethod(paymentMethod);
+        this.status = 'pending';
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
         this.paymentStatus = this.getInitialPaymentStatus(paymentMethod);
     }
 
-    // Xác định trạng thái thanh toán ban đầu dựa trên phương thức
-    getInitialPaymentStatus(method) {
-        switch (method) {
-            case 'cod':
-                return 'pending'; // Chờ thanh toán khi nhận hàng
-            case 'bank':
-            case 'bank_transfer':
-            case 'ewallet':
-                return 'awaiting_payment'; // Chờ chuyển khoản
-            case 'credit':
-                return 'processing'; // Đang xử lý thanh toán thẻ
-
-            default:
-                return 'pending';
+    validateOrderData(userId, items, totalPrice, shippingInfo, paymentMethod) {
+        if (!userId) {
+            throw new ValidationError('User ID là bắt buộc');
+        }
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            throw new ValidationError('Đơn hàng phải có ít nhất 1 sản phẩm');
+        }
+        if (!totalPrice || totalPrice <= 0) {
+            throw new ValidationError('Tổng tiền phải lớn hơn 0');
         }
     }
 
-    // Lấy tên hiển thị của phương thức thanh toán
+    validateAndNormalizeItems(items) {
+        return items.map(item => {
+            if (!item.productId) {
+                throw new ValidationError('Product ID là bắt buộc');
+            }
+            if (!item.quantity || item.quantity <= 0) {
+                throw new ValidationError('Số lượng phải lớn hơn 0');
+            }
+            if (!item.price || item.price <= 0) {
+                throw new ValidationError('Giá sản phẩm phải lớn hơn 0');
+            }
+            
+            return {
+                productId: item.productId,
+                title: item.title || 'Sản phẩm không xác định',
+                price: parseFloat(item.price),
+                quantity: parseInt(item.quantity),
+                imageUrl: item.imageUrl || '/images/default-product.jpg'
+            };
+        });
+    }
+
+    validatePrice(price) {
+        const numPrice = parseFloat(price);
+        if (isNaN(numPrice) || numPrice <= 0) {
+            throw new ValidationError('Giá không hợp lệ');
+        }
+        return numPrice;
+    }
+
+    validateShippingInfo(shippingInfo) {
+        const required = ['name', 'phone', 'email', 'address'];
+        const validated = {};
+        
+        for (const field of required) {
+            if (!shippingInfo[field] || shippingInfo[field].trim() === '') {
+                throw new ValidationError(`${field} là bắt buộc`);
+            }
+            validated[field] = shippingInfo[field].trim();
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(validated.email)) {
+            throw new ValidationError('Email không hợp lệ');
+        }
+        
+        // Validate phone format
+        const phoneRegex = /^[0-9]{10,11}$/;
+        if (!phoneRegex.test(validated.phone.replace(/\s/g, ''))) {
+            throw new ValidationError('Số điện thoại không hợp lệ');
+        }
+        
+        return validated;
+    }
+
+    validatePaymentMethod(method) {
+        const validMethods = ['cod', 'bank', 'bank_transfer', 'ewallet', 'credit'];
+        if (!validMethods.includes(method)) {
+            throw new ValidationError('Phương thức thanh toán không hợp lệ');
+        }
+        return method;
+    }
+
+    getInitialPaymentStatus(method) {
+        switch (method) {
+            case 'cod': return 'pending';
+            case 'bank':
+            case 'bank_transfer':
+            case 'ewallet': return 'awaiting_payment';
+            case 'credit': return 'processing';
+            default: return 'pending';
+        }
+    }
+
     getPaymentMethodName() {
         const methods = {
             'cod': 'Thanh toán khi nhận hàng (COD)',
             'bank': 'Chuyển khoản ngân hàng',
             'bank_transfer': 'Chuyển khoản QR Code',
             'ewallet': 'Ví điện tử',
-            'credit': 'Thẻ tín dụng/ghi nợ',
-
+            'credit': 'Thẻ tín dụng/ghi nợ'
         };
         return methods[this.paymentMethod] || 'Không xác định';
     }
 
-    // Lấy tên hiển thị của trạng thái thanh toán
     getPaymentStatusName() {
         const statuses = {
             'pending': 'Chờ thanh toán',
@@ -69,40 +131,85 @@ class Order {
     async save() {
         const db = getDb();
         try {
-            // Tạo chỉ mục để tìm đơn hàng nhanh hơn
             await db.collection('orders').createIndex({ userId: 1 });
             await db.collection('orders').createIndex({ createdAt: -1 });
 
-            // Lưu đơn hàng
-            return await db.collection('orders').insertOne(this);
+            if (this._id) {
+                // Nếu đã có _id thì update
+                const orderId = new mongodb.ObjectId(this._id);
+                this.updatedAt = new Date();
+                const updateData = { ...this };
+                delete updateData._id;
+
+                const result = await db.collection('orders').updateOne(
+                    { _id: orderId },
+                    { $set: updateData }
+                );
+                
+                if (result.matchedCount === 0) {
+                    throw new NotFoundError('Không tìm thấy đơn hàng để cập nhật');
+                }
+                
+                return { updatedId: orderId };
+            } else {
+                // Nếu chưa có _id thì insert mới
+                const result = await db.collection('orders').insertOne(this);
+                if (!result.insertedId) {
+                    throw new DatabaseError('Không thể tạo đơn hàng mới');
+                }
+                return result;
+            }
         } catch (error) {
+            if (error instanceof ValidationError || error instanceof NotFoundError) {
+                throw error;
+            }
             console.error('❌ Lỗi khi lưu đơn hàng:', error);
-            throw error;
+            throw new DatabaseError('Lỗi khi lưu đơn hàng vào cơ sở dữ liệu');
         }
     }
 
     static async findById(orderId) {
         const db = getDb();
         try {
-            return await db.collection('orders').findOne({ _id: new mongodb.ObjectId(orderId) });
+            if (!orderId) {
+                throw new ValidationError('Order ID là bắt buộc');
+            }
+            
+            const order = await db.collection('orders').findOne({ _id: new mongodb.ObjectId(orderId) });
+            if (!order) {
+                throw new NotFoundError('Không tìm thấy đơn hàng');
+            }
+            
+            return order;
         } catch (error) {
+            if (error instanceof ValidationError || error instanceof NotFoundError) {
+                throw error;
+            }
             console.error('❌ Lỗi khi tìm đơn hàng theo ID:', error);
-            throw error;
+            throw new DatabaseError('Lỗi khi truy vấn đơn hàng');
         }
     }
 
     static async findByUserId(userId) {
         const db = getDb();
         try {
+            if (!userId) {
+                throw new ValidationError('User ID là bắt buộc');
+            }
+            
             await db.collection('orders').createIndex({ userId: 1, createdAt: -1 });
-
-            return await db.collection('orders')
+            const orders = await db.collection('orders')
                 .find({ userId: userId })
                 .sort({ createdAt: -1 })
                 .toArray();
+            
+            return orders;
         } catch (error) {
+            if (error instanceof ValidationError) {
+                throw error;
+            }
             console.error('❌ Lỗi khi tìm đơn hàng theo user ID:', error);
-            return [];
+            throw new DatabaseError('Lỗi khi truy vấn đơn hàng của người dùng');
         }
     }
 
@@ -124,7 +231,6 @@ class Order {
         }
     }
 
-
     static async updatePaymentStatus(orderId, paymentData) {
         const db = getDb();
         try {
@@ -141,7 +247,6 @@ class Order {
                 if (paymentData.paidAt) updateData.paidAt = paymentData.paidAt;
                 if (paymentData.failedAt) updateData.failedAt = paymentData.failedAt;
                 if (paymentData.failureReason) updateData.failureReason = paymentData.failureReason;
-
             }
 
             return await db.collection('orders').updateOne(
@@ -153,7 +258,6 @@ class Order {
             throw error;
         }
     }
-
 
     static async updateOrderStatus(orderId, status, note = '') {
         const db = getDb();
@@ -190,7 +294,6 @@ class Order {
         }
     }
 
-    // Method để hiển thị trạng thái đơn hàng
     getStatusDisplay() {
         const statusMap = {
             'pending': 'Chờ xác nhận',
@@ -202,30 +305,12 @@ class Order {
         return statusMap[this.status] || 'Không xác định';
     }
 
-    // Method để hiển thị phương thức thanh toán (cho email)
     getPaymentMethodDisplay() {
-        const methods = {
-            'cod': 'Thanh toán khi nhận hàng (COD)',
-            'bank': 'Chuyển khoản ngân hàng',
-            'bank_transfer': 'Chuyển khoản QR Code',
-            'ewallet': 'Ví điện tử',
-            'credit': 'Thẻ tín dụng/ghi nợ',
-
-        };
-        return methods[this.paymentMethod] || 'Không xác định';
+        return this.getPaymentMethodName();
     }
 
-    // Method để hiển thị trạng thái thanh toán (cho email)
     getPaymentStatusDisplay() {
-        const statuses = {
-            'pending': 'Chờ thanh toán',
-            'awaiting_payment': 'Chờ chuyển khoản',
-            'processing': 'Đang xử lý',
-            'completed': 'Đã thanh toán',
-            'failed': 'Thanh toán thất bại',
-            'refunded': 'Đã hoàn tiền'
-        };
-        return statuses[this.paymentStatus] || 'Không xác định';
+        return this.getPaymentStatusName();
     }
 }
 
