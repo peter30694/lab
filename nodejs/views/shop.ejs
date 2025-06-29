@@ -1,0 +1,62 @@
+<%- include('./includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/product.css">
+    </head>
+
+    <body>
+        <%- include('./includes/navigation.ejs') %>
+
+            <main class="container py-5">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center display-4 mb-3">Danh Sách Sản Phẩm</h1>
+                        <p class="text-center text-muted">Khám phá các sản phẩm chất lượng từ Phương Store</p>
+                    </div>
+                </div>
+
+                <% if (prods.length > 0) { %>
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                        <% for (let product of prods) { %>
+                            <div class="col">
+                                <div class="card product-card h-100 shadow-sm">
+                                    <div class="product-image-container">
+                                        <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="card-img-top product-image">
+                                        <% if (product.isNew) { %>
+                                            <span class="badge bg-success position-absolute top-0 start-0 m-2">Mới</span>
+                                        <% } %>
+                                    </div>
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title fw-bold mb-2 text-primary"><%= product.title %></h5>
+                                        <div class="price-tag my-2">
+                                            <span class="fs-5 fw-bold"><%= product.price.toLocaleString('vi-VN') %> ₫</span>
+                                            <% if (product.oldPrice) { %>
+                                                <del class="text-muted ms-2 fs-6"><%= product.oldPrice.toLocaleString('vi-VN') %> ₫</del>
+                                            <% } %>
+                                        </div>
+                                        <p class="card-text flex-grow-1 text-muted small">
+                                            <%= product.description %>
+                                        </p>
+                                        <div class="d-flex mt-3 justify-content-between">
+                                            <a href="/products/<%= product._id %>" class="btn btn-outline-primary btn-sm flex-grow-1 me-2">
+                                                <i class="fas fa-info-circle"></i> Chi tiết
+                                            </a>
+                                            <form action="/cart" method="POST" class="flex-grow-1">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                                <button type="submit" class="btn btn-primary btn-sm w-100">
+                                                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-info text-center my-5 shadow-sm">
+                        <i class="fas fa-info-circle fa-2x mb-3"></i>
+                        <h4>Không có sản phẩm!</h4>
+                        <p>Hiện tại chúng tôi không có sản phẩm nào. Vui lòng quay lại sau.</p>
+                    </div>
+                <% } %>
+            </main>
+            <%- include('./includes/end.ejs') %>

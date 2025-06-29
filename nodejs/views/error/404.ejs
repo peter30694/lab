@@ -1,0 +1,81 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/error.css">
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    
+    <main class="error-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8 text-center">
+                    <div class="error-content">
+                        <div class="error-icon">
+                            <i class="fas fa-search fa-5x text-muted mb-4"></i>
+                        </div>
+                        
+                        <h1 class="error-code display-1 fw-bold text-primary mb-3">404</h1>
+                        
+                        <h2 class="error-title h3 mb-3">Không tìm thấy trang</h2>
+                        
+                        <p class="error-message text-muted mb-4">
+                            <%= message || 'Trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.' %>
+                        </p>
+                        
+                        <% if (typeof url !== 'undefined' && url) { %>
+                            <div class="error-url mb-4">
+                                <small class="text-muted">
+                                    URL: <code><%= url %></code>
+                                </small>
+                            </div>
+                        <% } %>
+                        
+                        <div class="error-actions">
+                            <a href="/" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-home me-2"></i>
+                                Về trang chủ
+                            </a>
+                            
+                            <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Quay lại
+                            </button>
+                        </div>
+                        
+                        <div class="helpful-links mt-5">
+                            <h5 class="mb-3">Có thể bạn đang tìm:</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="/products" class="text-decoration-none"><i class="fas fa-shopping-bag me-2"></i>Sản phẩm</a></li>
+                                        <li><a href="/cart" class="text-decoration-none"><i class="fas fa-shopping-cart me-2"></i>Giỏ hàng</a></li>
+                                        <li><a href="/orders" class="text-decoration-none"><i class="fas fa-receipt me-2"></i>Đơn hàng</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><a href="/contact" class="text-decoration-none"><i class="fas fa-envelope me-2"></i>Liên hệ</a></li>
+                                        <li><a href="/about" class="text-decoration-none"><i class="fas fa-info-circle me-2"></i>Về chúng tôi</a></li>
+                                        <li><a href="/help" class="text-decoration-none"><i class="fas fa-question-circle me-2"></i>Trợ giúp</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <%- include('../includes/end.ejs') %>
+    
+    <script>
+        // Auto redirect sau 30 giây
+        setTimeout(() => {
+            if (confirm('Bạn có muốn được chuyển về trang chủ không?')) {
+                window.location.href = '/';
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

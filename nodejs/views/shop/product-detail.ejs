@@ -1,0 +1,411 @@
+<%- include('../includes/head.ejs') %>
+    <%- include('../includes/navigation.ejs') %>
+
+        <style>
+            /* Container chính */
+            .product-detail-container {
+                background: #fff;
+                border-radius: 0.75rem;
+                box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+                padding: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            /* Phần ảnh sản phẩm */
+            .product-image-section {
+                position: relative;
+                background: #f8f9fa;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                min-height: 400px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .product-detail-image {
+                max-width: 100%;
+                max-height: 400px;
+                object-fit: contain;
+                transition: transform 0.3s ease;
+            }
+
+            .product-detail-image:hover {
+                transform: scale(1.05);
+            }
+
+            .product-badges {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                display: flex;
+                gap: 0.5rem;
+                z-index: 1;
+            }
+
+            /* Phần thông tin sản phẩm */
+            .product-info-section {
+                padding: 1.5rem;
+            }
+
+            .product-title {
+                font-size: 2rem;
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 1rem;
+                line-height: 1.3;
+            }
+
+            .price-section {
+                margin-bottom: 1.5rem;
+                padding-bottom: 1.5rem;
+                border-bottom: 1px solid #e3e6f0;
+            }
+
+            .original-price {
+                font-size: 1.1rem;
+                color: #6c757d;
+                text-decoration: line-through;
+                margin-right: 0.5rem;
+            }
+
+            .current-price {
+                font-size: 2rem;
+                font-weight: 700;
+                color: #dc3545;
+            }
+
+            .product-rating {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .review-count {
+                font-size: 0.9rem;
+                color: #6c757d;
+            }
+
+            /* Phần mô tả và thông tin */
+            .product-description {
+                margin-bottom: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 1rem;
+            }
+
+            .product-additional-info {
+                background: #f8f9fa;
+                border-radius: 0.5rem;
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .info-item {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .info-item i {
+                color: #4e73df;
+                font-size: 1.1rem;
+            }
+
+            /* Phần mua hàng */
+            .purchase-section {
+                background: #f8f9fa;
+                border-radius: 0.5rem;
+                padding: 1.5rem;
+                margin-top: 2rem;
+            }
+
+            .quantity-control {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .quantity-input {
+                width: 100px;
+                text-align: center;
+            }
+
+            .stock-info {
+                font-size: 0.9rem;
+                color: #6c757d;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            .btn-add-to-cart {
+                flex: 1;
+                padding: 0.75rem 1.5rem;
+                font-weight: 500;
+            }
+
+            .btn-wishlist {
+                padding: 0.75rem 1.5rem;
+            }
+
+            /* Phần tab chi tiết */
+            .product-tabs {
+                margin-top: 2rem;
+            }
+
+            .nav-tabs {
+                border-bottom: 2px solid #e3e6f0;
+                margin-bottom: 1.5rem;
+            }
+
+            .nav-tabs .nav-link {
+                color: #6c757d;
+                font-weight: 500;
+                border: none;
+                padding: 1rem 1.5rem;
+                transition: all 0.2s;
+            }
+
+            .nav-tabs .nav-link:hover {
+                color: #4e73df;
+                border-bottom: 2px solid #4e73df;
+            }
+
+            .nav-tabs .nav-link.active {
+                color: #4e73df;
+                background: none;
+                border: none;
+                border-bottom: 2px solid #4e73df;
+            }
+
+            .tab-content {
+                padding: 1.5rem;
+                background: #fff;
+                border-radius: 0.5rem;
+            }
+
+            /* Phần sản phẩm liên quan */
+            .related-products {
+                margin-top: 3rem;
+            }
+
+            .related-product-card {
+                border: none;
+                border-radius: 0.5rem;
+                transition: transform 0.3s ease;
+                height: 100%;
+            }
+
+            .related-product-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .related-product-image {
+                height: 200px;
+                object-fit: cover;
+                border-radius: 0.5rem 0.5rem 0 0;
+            }
+
+            .related-product-title {
+                font-size: 1.1rem;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+            }
+
+            .related-product-price {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #dc3545;
+            }
+        </style>
+
+        <main class="container py-5">
+            <div class="product-detail-container">
+                <div class="row">
+                    <!-- Ảnh sản phẩm -->
+                    <div class="col-lg-6">
+                        <div class="product-image-section">
+                            <img src="<%= product.imageUrl %>" alt="<%= product.title %>" 
+                                 class="product-detail-image">
+                            <div class="product-badges">
+                                <% if (product.isNew) { %>
+                                    <span class="badge bg-success">Mới</span>
+                                <% } %>
+                                <% if (product.discount > 0) { %>
+                                    <span class="badge bg-danger">-<%= product.discount %>%</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin sản phẩm -->
+                    <div class="col-lg-6">
+                        <div class="product-info-section">
+                            <h1 class="product-title"><%= product.title %></h1>
+
+                            <div class="price-section">
+                                <div class="d-flex align-items-center">
+                                    <% if (product.oldPrice) { %>
+                                        <del class="original-price">
+                                            <%= product.oldPrice.toLocaleString('vi-VN') %> ₫
+                                        </del>
+                                    <% } %>
+                                    <span class="current-price">
+                                        <%= product.price.toLocaleString('vi-VN') %> ₫
+                                    </span>
+                                </div>
+                                <div class="product-rating">
+                                    <% for(let i = 0; i < 5; i++) { %>
+                                        <i class="fas fa-star <%= i < product.rating ? 'text-warning' : 'text-muted' %>"></i>
+                                    <% } %>
+                                    <span class="review-count">(<%= product.reviews || 0 %> đánh giá)</span>
+                                </div>
+                            </div>
+
+                            <div class="product-description">
+                                <h5 class="section-title">Mô tả sản phẩm</h5>
+                                <p><%= product.description %></p>
+                            </div>
+
+                            <div class="product-additional-info">
+                                <h5 class="section-title">Thông tin thêm</h5>
+                                <div class="info-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Tình trạng: 
+                                        <% if (product.inStock) { %>
+                                            <span class="text-success fw-bold">Còn hàng</span>
+                                        <% } else { %>
+                                            <span class="text-danger fw-bold">Hết hàng</span>
+                                        <% } %>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-shipping-fast"></i>
+                                    <span>Giao hàng: 2-3 ngày</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Bảo hành: 12 tháng</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-undo"></i>
+                                    <span>Đổi trả: 30 ngày</span>
+                                </div>
+                            </div>
+
+                            <div class="purchase-section">
+                                <h5 class="section-title">Mua hàng</h5>
+                                <form action="/cart" method="POST">
+                                    <div class="quantity-control">
+                                        <label for="quantity" class="form-label">Số lượng:</label>
+                                        <input type="number" id="quantity" name="quantity" 
+                                               class="form-control quantity-input" value="1" 
+                                               min="1" max="<%= product.stockQuantity || 10 %>">
+                                        <span class="stock-info">
+                                            (<%= product.stockQuantity || 'N/A' %> sản phẩm có sẵn)
+                                        </span>
+                                    </div>
+                                    <input type="hidden" name="productId" value="<%= product._id %>">
+                                    <div class="action-buttons">
+                                        <button type="submit" class="btn btn-primary btn-add-to-cart">
+                                            <i class="fas fa-shopping-cart me-2"></i> Thêm vào giỏ
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-wishlist">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chi tiết sản phẩm -->
+            <div class="product-tabs">
+                <ul class="nav nav-tabs" id="productTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description-tab">
+                            Chi tiết sản phẩm
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#specifications-tab">
+                            Thông số kỹ thuật
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews-tab">
+                            Đánh giá (<%= product.reviews || 0 %>)
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="description-tab">
+                        <% if (product.detailDescription) { %>
+                            <%- product.detailDescription %>
+                        <% } else { %>
+                            <p class="text-muted">Chưa có mô tả chi tiết.</p>
+                        <% } %>
+                    </div>
+                    <div class="tab-pane fade" id="specifications-tab">
+                        <table class="table">
+                            <tbody>
+                                <% if (product.specifications) { %>
+                                    <% Object.entries(product.specifications).forEach(([key, value])=> { %>
+                                        <tr>
+                                            <th scope="row" style="width: 30%"><%= key %></th>
+                                            <td><%= value %></td>
+                                        </tr>
+                                    <% }) %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="reviews-tab">
+                        <p class="text-muted">Chưa có đánh giá nào.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sản phẩm liên quan -->
+            <div class="related-products">
+                <h3 class="mb-4">Sản phẩm tương tự</h3>
+                <div class="row">
+                    <% if (relatedProducts && relatedProducts.length > 0) { %>
+                        <% relatedProducts.forEach(relatedProduct => { %>
+                            <div class="col-md-3 mb-4">
+                                <div class="card related-product-card">
+                                    <img src="<%= relatedProduct.imageUrl %>" 
+                                         class="card-img-top related-product-image"
+                                         alt="<%= relatedProduct.title %>">
+                                    <div class="card-body">
+                                        <h5 class="related-product-title"><%= relatedProduct.title %></h5>
+                                        <p class="related-product-price">
+                                            <%= relatedProduct.price.toLocaleString('vi-VN') %> ₫
+                                        </p>
+                                        <a href="/products/<%= relatedProduct._id %>"
+                                           class="btn btn-outline-primary">Xem chi tiết</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="text-muted">Không có sản phẩm tương tự.</p>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+
+    <%- include('../includes/end.ejs') %>

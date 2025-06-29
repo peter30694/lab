@@ -1,0 +1,19 @@
+<%- include('includes/head.ejs') %>
+    <%- include('includes/navigation.ejs') %>
+
+        <main>
+            <section class="error-page">
+                <div class="error-content">
+                    <h1>Oops! Có lỗi xảy ra</h1>
+                    <p>
+                        <%= error %>
+                    </p>
+                    <div class="error-actions">
+                        <a href="/" class="btn">Về trang chủ</a>
+                        <a href="/products" class="btn btn--secondary">Xem sản phẩm</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <%- include('includes/end.ejs') %>

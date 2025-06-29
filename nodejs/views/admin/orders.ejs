@@ -1,0 +1,326 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/admin.css">
+<style>
+    .orders-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #007bff;
+    }
+    
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .orders-table th,
+    .orders-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .orders-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .orders-table tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    
+    .status-pending { background-color: #fff3cd; color: #856404; }
+    .status-confirmed { background-color: #d4edda; color: #155724; }
+    .status-shipping { background-color: #cce5ff; color: #004085; }
+    .status-delivered { background-color: #d1ecf1; color: #0c5460; }
+    .status-cancelled { background-color: #f8d7da; color: #721c24; }
+    
+    .payment-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .payment-awaiting { background-color: #fff3cd; color: #856404; }
+    .payment-paid { background-color: #d4edda; color: #155724; }
+    .payment-failed { background-color: #f8d7da; color: #721c24; }
+    
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-primary { background-color: #007bff; color: white; }
+    .btn-success { background-color: #28a745; color: white; }
+    .btn-warning { background-color: #ffc107; color: #212529; }
+    .btn-danger { background-color: #dc3545; color: white; }
+    
+    .no-orders {
+        text-align: center;
+        padding: 50px;
+        color: #666;
+    }
+    
+    .filter-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .filter-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .filter-group label {
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .filter-group select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+</style>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    
+    <main class="orders-container">
+        <div class="orders-header">
+            <h1>Quản lý đơn hàng</h1>
+            <div>
+                <span class="badge">Tổng: <%= orders.length %> đơn hàng</span>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="statusFilter">Trạng thái đơn hàng:</label>
+                    <select id="statusFilter">
+                        <option value="">Tất cả</option>
+                        <option value="pending">Chờ xác nhận</option>
+                        <option value="confirmed">Đã xác nhận</option>
+                        <option value="shipping">Đang giao</option>
+                        <option value="delivered">Đã giao</option>
+                        <option value="cancelled">Đã hủy</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="paymentFilter">Trạng thái thanh toán:</label>
+                    <select id="paymentFilter">
+                        <option value="">Tất cả</option>
+                        <option value="awaiting">Chờ thanh toán</option>
+                        <option value="paid">Đã thanh toán</option>
+                        <option value="failed">Thất bại</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="paymentMethodFilter">Phương thức thanh toán:</label>
+                    <select id="paymentMethodFilter">
+                        <option value="">Tất cả</option>
+                        <option value="cod">Thanh toán khi nhận hàng</option>
+                        <option value="bank">Chuyển khoản ngân hàng</option>
+                        <option value="ewallet">Ví điện tử</option>
+                        <option value="credit">Thẻ tín dụng</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <% if (orders.length === 0) { %>
+            <div class="no-orders">
+                <h3>Chưa có đơn hàng nào</h3>
+                <p>Hiện tại chưa có đơn hàng nào trong hệ thống.</p>
+            </div>
+        <% } else { %>
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Mã đơn hàng</th>
+                        <th>Khách hàng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Phương thức TT</th>
+                        <th>Trạng thái đơn hàng</th>
+                        <th>Trạng thái TT</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(order => { %>
+                        <tr data-status="<%= order.status %>" data-payment="<%= order.paymentStatus %>" data-method="<%= order.paymentMethod %>">
+                            <td><strong>#<%= order._id.toString().slice(-6) %></strong></td>
+                            <td>
+                                <div><%= order.shippingInfo.name %></div>
+                                <small><%= order.shippingInfo.email %></small>
+                            </td>
+                            <td><%= new Date(order.createdAt).toLocaleDateString('vi-VN') %></td>
+                            <td><strong><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</strong></td>
+                            <td><%= order.getPaymentMethodDisplay() %></td>
+                            <td>
+                                <select class="status-select" data-order-id="<%= order._id %>">
+                                    <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Chờ xác nhận</option>
+                                    <option value="confirmed" <%= order.status === 'confirmed' ? 'selected' : '' %>>Đã xác nhận</option>
+                                    <option value="shipping" <%= order.status === 'shipping' ? 'selected' : '' %>>Đang giao</option>
+                                    <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Đã giao</option>
+                                    <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Đã hủy</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="payment-select" data-order-id="<%= order._id %>">
+                                    <option value="awaiting" <%= order.paymentStatus === 'awaiting' ? 'selected' : '' %>>Chờ thanh toán</option>
+                                    <option value="paid" <%= order.paymentStatus === 'paid' ? 'selected' : '' %>>Đã thanh toán</option>
+                                    <option value="failed" <%= order.paymentStatus === 'failed' ? 'selected' : '' %>>Thất bại</option>
+                                </select>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/admin/orders/<%= order._id %>" class="btn-sm btn-primary">Chi tiết</a>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } %>
+    </main>
+    
+    <script>
+        // Xử lý cập nhật trạng thái đơn hàng
+        document.querySelectorAll('.status-select').forEach(select => {
+            select.addEventListener('change', async function() {
+                const orderId = this.dataset.orderId;
+                const status = this.value;
+                
+                try {
+                    const response = await fetch('/admin/update-order-status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ orderId, status })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('Cập nhật trạng thái đơn hàng thành công!');
+                    } else {
+                        alert('Lỗi: ' + result.message);
+                        location.reload();
+                    }
+                } catch (error) {
+                    alert('Có lỗi xảy ra khi cập nhật trạng thái');
+                    location.reload();
+                }
+            });
+        });
+        
+        // Xử lý cập nhật trạng thái thanh toán
+        document.querySelectorAll('.payment-select').forEach(select => {
+            select.addEventListener('change', async function() {
+                const orderId = this.dataset.orderId;
+                const paymentStatus = this.value;
+                
+                try {
+                    const response = await fetch('/admin/update-payment-status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ orderId, paymentStatus })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('Cập nhật trạng thái thanh toán thành công!');
+                    } else {
+                        alert('Lỗi: ' + result.message);
+                        location.reload();
+                    }
+                } catch (error) {
+                    alert('Có lỗi xảy ra khi cập nhật trạng thái thanh toán');
+                    location.reload();
+                }
+            });
+        });
+        
+        // Xử lý lọc đơn hàng
+        function filterOrders() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const paymentFilter = document.getElementById('paymentFilter').value;
+            const methodFilter = document.getElementById('paymentMethodFilter').value;
+            
+            const rows = document.querySelectorAll('.orders-table tbody tr');
+            
+            rows.forEach(row => {
+                const status = row.dataset.status;
+                const payment = row.dataset.payment;
+                const method = row.dataset.method;
+                
+                const statusMatch = !statusFilter || status === statusFilter;
+                const paymentMatch = !paymentFilter || payment === paymentFilter;
+                const methodMatch = !methodFilter || method === methodFilter;
+                
+                if (statusMatch && paymentMatch && methodMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        document.getElementById('statusFilter').addEventListener('change', filterOrders);
+        document.getElementById('paymentFilter').addEventListener('change', filterOrders);
+        document.getElementById('paymentMethodFilter').addEventListener('change', filterOrders);
+    </script>
+    
+    <%- include('../includes/end.ejs') %>

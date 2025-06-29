@@ -1,0 +1,91 @@
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="/" class="text-2xl font-pacifico text-primary">PetShop</a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="/" class="text-gray-700 hover:text-primary transition-colors">Trang chủ</a>
+                <a href="/shop" class="text-gray-700 hover:text-primary transition-colors">Sản phẩm</a>
+                <a href="/categories" class="text-gray-700 hover:text-primary transition-colors">Danh mục</a>
+                <a href="/about" class="text-gray-700 hover:text-primary transition-colors">Giới thiệu</a>
+                <a href="/contact" class="text-gray-700 hover:text-primary transition-colors">Liên hệ</a>
+            </div>
+            
+            <!-- User Actions -->
+            <div class="flex items-center space-x-4">
+                <!-- Search -->
+                <div class="hidden md:flex relative">
+                    <input type="text" placeholder="Tìm kiếm..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                        <i class="ri-search-line text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <!-- Cart -->
+                <a href="/cart" class="relative p-2 text-gray-700 hover:text-primary transition-colors">
+                    <i class="ri-shopping-cart-line text-xl"></i>
+                    <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"><%= cartCount %></span>
+                    <% } %>
+                </a>
+                
+                <!-- User Menu -->
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 p-2 text-gray-700 hover:text-primary transition-colors">
+                            <i class="ri-user-line text-xl"></i>
+                            <span class="hidden md:block"><%= user.name || user.email || 'Người dùng' %></span>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <div class="px-4 py-2 text-sm text-gray-500 border-b">
+                                <i class="ri-user-circle"></i> <%= user.email || 'Không có email' %>
+                            </div>
+                            <a href="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Thông tin cá nhân</a>
+                            <a href="/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Đơn hàng</a>
+                            <% if (user.role === 'admin') { %>
+                                <a href="/admin" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Quản trị</a>
+                            <% } %>
+                            <hr class="my-1">
+                            <form action="/logout" method="POST" class="block">
+                                <button type="submit" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Đăng xuất</button>
+                            </form>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="/login" class="bg-primary text-white px-4 py-2 rounded-button hover:bg-primary-dark transition-colors">Đăng nhập</a>
+                <% } %>
+                
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden p-2 text-gray-700 hover:text-primary" id="mobile-menu-btn">
+                    <i class="ri-menu-line text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="py-4 space-y-2">
+                <a href="/" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Trang chủ</a>
+                <a href="/shop" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Sản phẩm</a>
+                <a href="/categories" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Danh mục</a>
+                <a href="/about" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Giới thiệu</a>
+                <a href="/contact" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Liên hệ</a>
+                
+                <!-- Mobile Search -->
+                <div class="px-4 py-2">
+                    <div class="relative">
+                        <input type="text" placeholder="Tìm kiếm..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                            <i class="ri-search-line text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

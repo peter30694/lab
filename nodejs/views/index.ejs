@@ -1,0 +1,67 @@
+<%- include('includes/head') %>
+
+    <%- include('includes/navigation') %>
+
+        <main class="container py-5">
+            <div class="row">
+                <div class="col-md-12 text-center mb-5">
+                    <h1 class="display-4">Chào mừng đến với Phương Store</h1>
+                    <p class="lead">Khám phá các sản phẩm chất lượng của chúng tôi</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shipping-fast fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Giao hàng nhanh chóng</h5>
+                            <p class="card-text">Cam kết giao hàng trong 24h cho khu vực nội thành</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Bảo hành uy tín</h5>
+                            <p class="card-text">Chính sách bảo hành 12 tháng cho tất cả sản phẩm</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Hỗ trợ 24/7</h5>
+                            <p class="card-text">Đội ngũ hỗ trợ luôn sẵn sàng phục vụ bạn</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-12 text-center mb-4">
+                    <h2>Sản phẩm nổi bật</h2>
+                </div>
+            </div>
+
+            <div class="product-grid">
+                <% prods.forEach(product=> { %>
+                    <div class="product-card">
+                        <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%= product.title %>
+                            </h5>
+                            <p class="price">
+                                <%= product.price.toLocaleString('vi-VN') %> VNĐ
+                            </p>
+                            <a href="/products/<%= product._id %>" class="btn btn-primary w-100">Xem chi tiết</a>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+        </main>
+
+        <%- include('includes/end') %>

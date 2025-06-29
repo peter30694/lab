@@ -1,0 +1,98 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-store text-primary"></i> Phương Store
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link <%= path === '/' ? 'active' : '' %>" href="/">
+                        <i class="fas fa-home"></i> Trang chủ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= path === '/products' ? 'active' : '' %>" href="/products">
+                        <i class="fas fa-store"></i> Sản phẩm
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Menu người dùng -->
+            <ul class="navbar-nav">
+                <% if (isAuthenticated) { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= path === '/cart' ? 'active' : '' %>" href="/cart">
+                            <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= path === '/orders' ? 'active' : '' %>" href="/orders">
+                            <i class="fas fa-box"></i> Đơn hàng
+                        </a>
+                    </li>
+
+                    <!-- User dropdown menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> 
+                            <%= user ? user.name : 'Người dùng' %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><span class="dropdown-item-text text-muted">
+                                <i class="fas fa-user-circle"></i> <%= user ? user.email : '' %>
+                            </span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="/logout" method="POST" class="d-inline">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <% if (isAdmin===true) { %>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                                data-bs-toggle="dropdown">
+                                <i class="fas fa-user-cog"></i> Quản lý
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item <%= path === '/admin/add-product' ? 'active' : '' %>"
+                                        href="/admin/add-product">
+                                        <i class="fas fa-plus-circle"></i> Thêm sản phẩm
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item <%= path === '/admin/products' ? 'active' : '' %>"
+                                        href="/admin/products">
+                                        <i class="fas fa-list"></i> Quản lý sản phẩm
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item <%= path === '/admin/orders' ? 'active' : '' %>"
+                                        href="/admin/orders">
+                                        <i class="fas fa-shopping-bag"></i> Quản lý đơn hàng
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    <% } %>
+                <% } else { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= path === '/login' ? 'active' : '' %>" href="/login">
+                            <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>
