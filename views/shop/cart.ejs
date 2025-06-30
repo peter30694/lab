@@ -1,102 +1,102 @@
 <%- include('../includes/head.ejs') %>
-    <link rel="stylesheet" href="/css/cart.css">
     </head>
 
-    <body>
+    <body class="bg-gray-50">
         <%- include('../includes/navigation.ejs') %>
 
-            <main class="container mt-4">
-                <div class="cart-container">
-                    <div class="cart-header">
-                        <h1 class="text-primary">
-                            <i class="fas fa-shopping-cart"></i> Giỏ hàng của bạn
-                        </h1>
-                    </div>
+        <main class="container mx-auto px-4 py-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                        <i class="ri-shopping-cart-line text-primary mr-3"></i> Giỏ hàng của bạn
+                    </h1>
+                </div>
 
-                    <% if (products && products.length> 0) { %>
-                        <div class="cart-items">
-                            <% products.forEach(product=> { %>
-                                <div class="cart-item card mb-3">
-                                    <div class="row g-0">
-                                        <div class="col-md-2">
-                                            <img src="<%= product.imageUrl %>" class="img-fluid rounded-start"
-                                                alt="<%= product.title %>">
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                                <h5 class="card-title">
+                <% if (products && products.length> 0) { %>
+                    <div class="space-y-6">
+                        <% products.forEach(product=> { %>
+                            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                                <div class="flex flex-col md:flex-row">
+                                    <div class="md:w-32 h-32 md:h-auto">
+                                        <img src="<%= product.imageUrl %>" class="w-full h-full object-cover"
+                                            alt="<%= product.title %>">
+                                    </div>
+                                    <div class="flex-1 p-6">
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-xl font-semibold text-gray-900 mb-2">
                                                     <%= product.title %>
-                                                </h5>
-                                                <p class="card-text">
-                                                    <span class="text-muted">Đơn giá:</span>
-                                                    <span class="price">
-                                                        <%= product.price.toLocaleString('vi-VN') %> VNĐ
-                                                    </span>
-                                                </p>
-                                                <p class="card-text">
-                                                    <span class="text-muted">Số lượng:</span>
-                                                    <form action="/cart-update-quantity" method="POST" class="d-inline">
-                                                        <input type="hidden" name="productId" value="<%= product._id %>">
-                                                        <div class="input-group" style="width: 150px;">
-                                                            <input type="number" name="quantity" class="form-control form-control-sm" 
-                                                                value="<%= product.quantity %>" min="1" max="<%= product.stockQuantity || 10 %>"
-                                                                onchange="this.form.submit()">
-                                                            <span class="input-group-text bg-light">
-                                                                <small class="text-muted">
+                                                </h3>
+                                                <div class="space-y-2">
+                                                    <p class="text-gray-600">
+                                                        <span class="font-medium">Đơn giá:</span>
+                                                        <span class="text-primary font-semibold">
+                                                            <%= product.price.toLocaleString('vi-VN') %> VNĐ
+                                                        </span>
+                                                    </p>
+                                                    <div class="flex items-center space-x-4">
+                                                        <span class="text-gray-600 font-medium">Số lượng:</span>
+                                                        <form action="/cart-update-quantity" method="POST" class="flex items-center">
+                                                            <input type="hidden" name="productId" value="<%= product._id %>">
+                                                            <div class="flex items-center border border-gray-300 rounded-lg">
+                                                                <input type="number" name="quantity" 
+                                                                    value="<%= product.quantity %>" min="1" max="<%= product.stockQuantity || 10 %>"
+                                                                    onchange="this.form.submit()"
+                                                                    class="w-20 px-3 py-2 text-center border-0 focus:ring-2 focus:ring-primary focus:outline-none">
+                                                                <span class="px-3 py-2 bg-gray-50 text-sm text-gray-500 border-l">
                                                                     <%= product.stockQuantity ? `Còn ${product.stockQuantity} sp` : '' %>
-                                                                </small>
-                                                            </span>
-                                                        </div>
-                                                    </form>
-                                                </p>
-                                                <p class="card-text">
-                                                    <span class="text-muted">Thành tiền:</span>
-                                                    <span class="subtotal">
-                                                        <%= (product.price * product.quantity).toLocaleString('vi-VN')
-                                                            %> VNĐ
-                                                    </span>
-                                                </p>
+                                                                </span>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <p class="text-lg font-bold text-primary">
+                                                        <span class="text-gray-600 font-medium">Thành tiền:</span>
+                                                        <%= (product.price * product.quantity).toLocaleString('vi-VN') %> VNĐ
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-2 d-flex align-items-center justify-content-center">
-                                            <form action="/cart-delete-item" method="POST">
-                                                <input type="hidden" name="productId" value="<%= product._id %>">
-                                                <button class="btn btn-danger" type="submit">
-                                                    <i class="fas fa-trash"></i> Xóa
-                                                </button>
-                                            </form>
+                                            <div class="mt-4 md:mt-0 md:ml-6">
+                                                <form action="/cart-delete-item" method="POST">
+                                                    <input type="hidden" name="productId" value="<%= product._id %>">
+                                                    <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center" type="submit">
+                                                        <i class="ri-delete-bin-line mr-2"></i> Xóa
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <% }) %>
-                        </div>
+                            </div>
+                        <% }) %>
+                    </div>
 
-                        <div class="cart-summary card mt-4">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h3 class="mb-0">Tổng tiền:</h3>
-                                    <h3 class="text-primary mb-0">
-                                        <%= totalPrice.toLocaleString('vi-VN') %> VNĐ
-                                    </h3>
-                                </div>
-                                <div class="d-grid gap-2 mt-3">
-                                        <!-- Chuyển hướng sang trang checkout -->
-                            <a href="/checkout" class="btn btn-primary btn-lg w-100">
-                                <i class="fas fa-check-circle"></i> Tiến hành đặt hàng
-                            </a>
-                                </div>
-                            </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 mt-8">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Tóm tắt đơn hàng</h3>
+                        <div class="flex justify-between items-center py-4 border-t border-gray-200">
+                            <span class="text-lg font-medium text-gray-700">Tổng tiền:</span>
+                            <span class="text-2xl font-bold text-primary">
+                                <%= totalPrice.toLocaleString('vi-VN') %> VNĐ
+                            </span>
                         </div>
-                        <% } else { %>
-                            <div class="empty-cart text-center py-5">
-                                <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
-                                <h2>Giỏ hàng trống</h2>
-                                <p class="text-muted">Bạn chưa có sản phẩm nào trong giỏ hàng.</p>
-                                <a href="/products" class="btn btn-primary btn-lg mt-3">
-                                    <i class="fas fa-shopping-bag"></i> Tiếp tục mua sắm
-                                </a>
-                            </div>
-                            <% } %>
+                        <div class="space-y-3 mt-6">
+                            <a href="/checkout" class="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-dark transition-colors text-center block">
+                                Thanh toán
+                            </a>
+                            <a href="/" class="w-full border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-center block">
+                                Tiếp tục mua sắm
+                            </a>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="bg-white rounded-xl shadow-lg p-12 text-center">
+                        <i class="ri-shopping-cart-line text-6xl text-gray-400 mb-6"></i>
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4">Giỏ hàng của bạn đang trống</h3>
+                        <p class="text-gray-600 mb-8">Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm.</p>
+                        <a href="/" class="bg-primary text-white py-3 px-8 rounded-lg font-semibold hover:bg-primary-dark transition-colors inline-block">
+                            Bắt đầu mua sắm
+                        </a>
+                    </div>
+                <% } %>
                 </div>
             </main>
 

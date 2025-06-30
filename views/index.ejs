@@ -1,63 +1,51 @@
 <%- include('includes/head') %>
+    <body class="bg-gray-50">
+        <%- include('includes/navigation') %>
 
-    <%- include('includes/navigation') %>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-4">Chào mừng đến với Phương Store</h1>
+                <p class="text-xl text-gray-600">Khám phá các sản phẩm chất lượng của chúng tôi</p>
+            </div>
 
-        <main class="container py-5">
-            <div class="row">
-                <div class="col-md-12 text-center mb-5">
-                    <h1 class="display-4">Chào mừng đến với Phương Store</h1>
-                    <p class="lead">Khám phá các sản phẩm chất lượng của chúng tôi</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div class="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-lg transition-shadow duration-300">
+                    <i class="ri-truck-line text-5xl text-blue-600 mb-4"></i>
+                    <h5 class="text-xl font-bold text-gray-900 mb-3">Giao hàng nhanh chóng</h5>
+                    <p class="text-gray-600">Cam kết giao hàng trong 24h cho khu vực nội thành</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-lg transition-shadow duration-300">
+                    <i class="ri-shield-check-line text-5xl text-blue-600 mb-4"></i>
+                    <h5 class="text-xl font-bold text-gray-900 mb-3">Bảo hành uy tín</h5>
+                    <p class="text-gray-600">Chính sách bảo hành 12 tháng cho tất cả sản phẩm</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-8 text-center hover:shadow-lg transition-shadow duration-300">
+                    <i class="ri-headphone-line text-5xl text-blue-600 mb-4"></i>
+                    <h5 class="text-xl font-bold text-gray-900 mb-3">Hỗ trợ 24/7</h5>
+                    <p class="text-gray-600">Đội ngũ hỗ trợ luôn sẵn sàng phục vụ bạn</p>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-shipping-fast fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Giao hàng nhanh chóng</h5>
-                            <p class="card-text">Cam kết giao hàng trong 24h cho khu vực nội thành</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Bảo hành uy tín</h5>
-                            <p class="card-text">Chính sách bảo hành 12 tháng cho tất cả sản phẩm</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <i class="fas fa-headset fa-3x text-primary mb-3"></i>
-                            <h5 class="card-title">Hỗ trợ 24/7</h5>
-                            <p class="card-text">Đội ngũ hỗ trợ luôn sẵn sàng phục vụ bạn</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Sản phẩm nổi bật</h2>
             </div>
 
-            <div class="row mt-5">
-                <div class="col-md-12 text-center mb-4">
-                    <h2>Sản phẩm nổi bật</h2>
-                </div>
-            </div>
-
-            <div class="product-grid">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 <% prods.forEach(product=> { %>
-                    <div class="product-card">
-                        <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="card-img-top">
-                        <div class="card-body">
-                            <h5 class="card-title">
+                    <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
+                        <div class="relative overflow-hidden">
+                            <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+                        <div class="p-4">
+                            <h5 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                                 <%= product.title %>
                             </h5>
-                            <p class="price">
+                            <p class="text-xl font-bold text-blue-600 mb-4">
                                 <%= product.price.toLocaleString('vi-VN') %> VNĐ
                             </p>
-                            <a href="/products/<%= product._id %>" class="btn btn-primary w-100">Xem chi tiết</a>
+                            <a href="/products/<%= product._id %>" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 text-center block">
+                                <i class="ri-eye-line mr-2"></i>Xem chi tiết
+                            </a>
                         </div>
                     </div>
                     <% }) %>

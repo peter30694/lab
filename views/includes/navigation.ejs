@@ -1,84 +1,129 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-        <a class="navbar-brand" href="/">
-            <i class="fas fa-store text-primary"></i> Phương Store
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="/" class="text-2xl font-pacifico text-primary">
+                    <i class="ri-store-line"></i> Phương Store
+                </a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="/" class="text-gray-700 hover:text-primary transition-colors <%= path === '/' ? 'text-primary font-semibold' : '' %>">
+                    <i class="ri-home-line"></i> Trang chủ
+                </a>
+                <a href="/products" class="text-gray-700 hover:text-primary transition-colors <%= path === '/products' ? 'text-primary font-semibold' : '' %>">
+                    <i class="ri-store-line"></i> Sản phẩm
+                </a>
+            </div>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link <%= path === '/' ? 'active' : '' %>" href="/">
-                        <i class="fas fa-home"></i> Trang chủ
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <%= path === '/products' ? 'active' : '' %>" href="/products">
-                        <i class="fas fa-store"></i> Sản phẩm
-                    </a>
-                </li>
-            </ul>
-
-            <!-- Menu người dùng -->
-            <ul class="navbar-nav">
+            <!-- User Actions -->
+            <div class="flex items-center space-x-4">
                 <% if (isAuthenticated) { %>
-                    <li class="nav-item">
-                        <a class="nav-link <%= path === '/cart' ? 'active' : '' %>" href="/cart">
-                            <i class="fas fa-shopping-cart"></i> Giỏ hàng
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <%= path === '/orders' ? 'active' : '' %>" href="/orders">
-                            <i class="fas fa-box"></i> Đơn hàng
-                        </a>
-                    </li>
-
-                    <% if (isAdmin===true) { %>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
-                                data-bs-toggle="dropdown">
-                                <i class="fas fa-user-cog"></i> Quản lý
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item <%= path === '/admin/add-product' ? 'active' : '' %>"
-                                        href="/admin/add-product">
-                                        <i class="fas fa-plus-circle"></i> Thêm sản phẩm
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item <%= path === '/admin/products' ? 'active' : '' %>"
-                                        href="/admin/products">
-                                        <i class="fas fa-list"></i> Quản lý sản phẩm
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item <%= path === '/admin/orders' ? 'active' : '' %>"
-                                        href="/admin/orders">
-                                        <i class="fas fa-shopping-bag"></i> Quản lý đơn hàng
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                    <!-- Cart -->
+                    <a href="/cart" class="relative p-2 text-gray-700 hover:text-primary transition-colors <%= path === '/cart' ? 'text-primary' : '' %>">
+                        <i class="ri-shopping-cart-line text-xl"></i>
+                        <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"><%= cartCount %></span>
                         <% } %>
+                    </a>
+                    
+                    <!-- Orders -->
+                    <a href="/orders" class="p-2 text-gray-700 hover:text-primary transition-colors <%= path === '/orders' ? 'text-primary' : '' %>">
+                        <i class="ri-box-line text-xl"></i>
+                    </a>
 
-                            <li class="nav-item">
-                                <form action="/logout" method="POST" class="d-inline">
-                                    <button type="submit" class="btn btn-link nav-link">
-                                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                                    </button>
-                                </form>
-                            </li>
-                            <% } else { %>
-                                <li class="nav-item">
-                                    <a class="nav-link <%= path === '/login' ? 'active' : '' %>" href="/login">
-                                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
-                                    </a>
-                                </li>
-                                <% } %>
-            </ul>
+                    <!-- Unified User/Admin dropdown menu -->
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 p-2 text-gray-700 hover:text-primary transition-colors">
+                            <i class="ri-user-line text-xl"></i>
+                            <span class="hidden md:block"><%= user ? user.name : 'Người dùng' %></span>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            <div class="px-4 py-2 text-sm text-gray-500 border-b flex items-center gap-2">
+                                <i class="ri-user-circle-line"></i> <%= user ? user.email : '' %>
+                            </div>
+                            <% if (isAdmin === true) { %>
+                                <a href="/admin/add-product" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/add-product' ? 'bg-blue-50 text-primary' : '' %>">
+                                    <i class="ri-add-circle-line"></i> Thêm sản phẩm
+                                </a>
+                                <a href="/admin/products" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/products' ? 'bg-blue-50 text-primary' : '' %>">
+                                    <i class="ri-list-check"></i> Quản lý sản phẩm
+                                </a>
+                                <a href="/admin/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/orders' ? 'bg-blue-50 text-primary' : '' %>">
+                                    <i class="ri-shopping-bag-line"></i> Quản lý đơn hàng
+                                </a>
+                                <div class="border-t my-1"></div>
+                            <% } %>
+                            <form action="/logout" method="POST" class="block">
+                                <button type="submit" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">
+                                    <i class="ri-logout-box-line"></i> Đăng xuất
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="/login" class="bg-primary text-white px-4 py-2 rounded-button hover:bg-primary-dark transition-colors <%= path === '/login' ? 'bg-primary-dark' : '' %>">
+                        <i class="ri-login-box-line"></i> Đăng nhập
+                    </a>
+                <% } %>
+                
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden p-2 text-gray-700 hover:text-primary" id="mobile-menu-btn">
+                    <i class="ri-menu-line text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="py-4 space-y-2">
+                <a href="/" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/' ? 'bg-blue-50 text-primary' : '' %>">
+                    <i class="ri-home-line"></i> Trang chủ
+                </a>
+                <a href="/products" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/products' ? 'bg-blue-50 text-primary' : '' %>">
+                    <i class="ri-store-line"></i> Sản phẩm
+                </a>
+                <% if (isAuthenticated) { %>
+                    <a href="/cart" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/cart' ? 'bg-blue-50 text-primary' : '' %>">
+                        <i class="ri-shopping-cart-line"></i> Giỏ hàng
+                    </a>
+                    <a href="/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/orders' ? 'bg-blue-50 text-primary' : '' %>">
+                        <i class="ri-box-line"></i> Đơn hàng
+                    </a>
+                    <% if (isAdmin===true) { %>
+                        <a href="/admin/add-product" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/add-product' ? 'bg-blue-50 text-primary' : '' %>">
+                            <i class="ri-add-circle-line"></i> Thêm sản phẩm
+                        </a>
+                        <a href="/admin/products" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/products' ? 'bg-blue-50 text-primary' : '' %>">
+                            <i class="ri-list-check"></i> Quản lý sản phẩm
+                        </a>
+                        <a href="/admin/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/orders' ? 'bg-blue-50 text-primary' : '' %>">
+                            <i class="ri-shopping-bag-line"></i> Quản lý đơn hàng
+                        </a>
+                    <% } %>
+                <% } else { %>
+                    <a href="/login" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/login' ? 'bg-blue-50 text-primary' : '' %>">
+                        <i class="ri-login-box-line"></i> Đăng nhập
+                    </a>
+                <% } %>
+            </div>
         </div>
     </div>
 </nav>
+
+<script>
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+});
+</script>

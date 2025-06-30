@@ -2,6 +2,11 @@ const { AppError, ValidationError, AuthenticationError, NotFoundError, DatabaseE
 
 // Middleware xử lý 404 - Not Found
 const notFoundHandler = (req, res, next) => {
+    // Don't create 404 errors for missing product images - they're handled by imageHandler
+    if (req.path.startsWith('/images/products/')) {
+        return res.redirect('/images/default-product.jpg');
+    }
+    
     const error = new NotFoundError(`Không tìm thấy trang: ${req.originalUrl}`);
     next(error);
 };
@@ -11,15 +16,20 @@ const errorHandler = (error, req, res, next) => {
     let err = { ...error };
     err.message = error.message;
 
-    // Log lỗi để debug
-    console.error('Error:', {
-        message: error.message,
-        stack: error.stack,
-        url: req.originalUrl,
-        method: req.method,
-        ip: req.ip,
-        userAgent: req.get('User-Agent')
-    });
+    // Don't log 404 errors for missing product images
+    const isProductImage404 = req.path.startsWith('/images/products/') && error.statusCode === 404;
+    
+    if (!isProductImage404) {
+        // Log lỗi để debug
+        console.error('Error:', {
+            message: error.message,
+            stack: error.stack,
+            url: req.originalUrl,
+            method: req.method,
+            ip: req.ip,
+            userAgent: req.get('User-Agent')
+        });
+    }
 
     // Xử lý các loại lỗi MongoDB
     if (error.name === 'CastError') {

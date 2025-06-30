@@ -7,7 +7,10 @@ router.get('/login', (req, res, next) => {
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Đăng nhập',
-        error: null
+        error: null,
+        isAuthenticated: req.session.user ? true : false,
+        isAdmin: req.session.user && req.session.user.role === 'admin',
+        user: req.session.user || null
     });
 });
 
@@ -20,7 +23,10 @@ router.post('/login', async (req, res, next) => {
             return res.render('auth/login', {
                 path: '/login',
                 pageTitle: 'Đăng nhập',
-                error: 'Email không tồn tại'
+                error: 'Email không tồn tại',
+                isAuthenticated: req.session.user ? true : false,
+                isAdmin: req.session.user && req.session.user.role === 'admin',
+                user: req.session.user || null
             });
         }
 
@@ -38,7 +44,10 @@ router.post('/login', async (req, res, next) => {
         res.render('auth/login', {
             path: '/login',
             pageTitle: 'Đăng nhập',
-            error: 'Có lỗi xảy ra khi đăng nhập'
+            error: 'Có lỗi xảy ra khi đăng nhập',
+            isAuthenticated: req.session.user ? true : false,
+            isAdmin: req.session.user && req.session.user.role === 'admin',
+            user: req.session.user || null
         });
     }
 });

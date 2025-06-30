@@ -10,6 +10,7 @@ const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 const { notFoundHandler, errorHandler, asyncHandler } = require('./middleware/errorHandler');
 const validationMiddleware = require('./middleware/validation');
+const imageHandler = require('./middleware/imageHandler');
 const { logger, requestLogger } = require('./util/logger');
 
 const app = express();
@@ -50,6 +51,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // Thêm middleware để parse JSON
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Add image handler middleware to handle missing product images
+app.use(imageHandler);
+
 // Cấu hình session
 app.use(session({
     secret: process.env.SESSION_SECRET || 'my secret',
@@ -86,6 +90,7 @@ app.use(requestLogger);
 app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.user ? true : false;
     res.locals.isAdmin = req.session.user && req.session.user.role === 'admin';
+    res.locals.user = req.session.user || null; // Add user information
     
     logger.debug('Request authentication', {
         url: req.url,

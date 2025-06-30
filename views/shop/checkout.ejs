@@ -1,107 +1,131 @@
 <%- include('../includes/head.ejs') %>
-  <link rel="stylesheet" href="/css/payment.css">
   </head>
 
-  <body>
+  <body class="bg-gray-50">
     <%- include('../includes/navigation.ejs') %>
 
-      <main class="container mt-5">
-        <div class="card p-4 shadow-sm">
-          <h2 class="text-primary mb-4">
-            <i class="fas fa-user-check"></i> Thông tin khách hàng
+      <main class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold text-primary mb-6 flex items-center">
+            <i class="ri-user-check-line mr-3"></i> Thông tin khách hàng
           </h2>
 
           <form id="checkoutForm" action="/orders" method="POST">
             <!-- Họ tên -->
-            <div class="mb-3">
-              <label for="name" class="form-label">Họ và tên</label>
-              <input type="text" class="form-control" id="name" name="name" required placeholder="Nguyễn Văn A">
+            <div class="mb-6">
+              <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Họ và tên</label>
+              <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors" id="name" name="name" required placeholder="Nguyễn Văn A">
             </div>
 
             <!-- Số điện thoại -->
-            <div class="mb-3">
-              <label for="phone" class="form-label">Số điện thoại</label>
-              <input type="text" class="form-control" id="phone" name="phone" required placeholder="0123456789">
+            <div class="mb-6">
+              <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
+              <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors" id="phone" name="phone" required placeholder="0123456789">
             </div>
 
             <!-- Email -->
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required placeholder="example@gmail.com">
+            <div class="mb-6">
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors" id="email" name="email" required placeholder="example@gmail.com">
             </div>
 
             <!-- Địa chỉ giao hàng -->
-            <div class="mb-3">
-              <label for="address" class="form-label">Địa chỉ giao hàng</label>
-              <textarea class="form-control" id="address" name="address" rows="3" required
+            <div class="mb-8">
+              <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ giao hàng</label>
+              <textarea class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors" id="address" name="address" rows="3" required
                 placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành..."></textarea>
             </div>
 
             <!-- Phương thức thanh toán -->
-            <div class="mb-4">
-              <h5 class="text-primary mb-3">
-                <i class="fas fa-credit-card"></i> Phương thức thanh toán
-              </h5>
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold text-primary mb-6 flex items-center">
+                <i class="ri-bank-card-line mr-3"></i> Phương thức thanh toán
+              </h3>
 
-              <div class="row justify-content-center">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                 <!-- COD - Thanh toán khi nhận hàng -->
-                <div class="col-md-6 col-lg-5 mb-3">
-                  <div class="card payment-method border-warning h-100">
-                    <div class="card-body text-center">
-                      <input type="radio" class="form-check-input" id="cod" name="paymentMethod" value="cod" checked>
-                      <label class="form-check-label w-100" for="cod">
-                        <i class="fas fa-truck fa-4x text-warning mb-3"></i>
-                        <h4 class="text-warning">COD</h4>
-                        <p class="text-muted mb-2">Thanh toán khi nhận hàng</p>
-                        <small class="text-info d-block"><i class="fas fa-hand-holding-usd"></i> Tiện lợi - Không cần
-                          trả trước</small>
-                        <small class="text-success d-block mt-1"><i class="fas fa-check-circle"></i> Kiểm tra hàng trước
-                          khi thanh toán</small>
-                      </label>
+                <div class="relative">
+                  <input type="radio" class="sr-only" id="cod" name="paymentMethod" value="cod" checked>
+                  <label class="block cursor-pointer" for="cod">
+                    <div class="bg-white border-2 border-yellow-400 rounded-xl p-6 text-center h-full hover:shadow-lg transition-all duration-300">
+                      <i class="ri-truck-line text-6xl text-yellow-500 mb-4"></i>
+                      <h4 class="text-xl font-bold text-yellow-600 mb-2">COD</h4>
+                      <p class="text-gray-600 mb-4">Thanh toán khi nhận hàng</p>
+                      <div class="space-y-2">
+                        <div class="flex items-center justify-center text-sm text-blue-600">
+                          <i class="ri-hand-coin-line mr-2"></i>
+                          <span>Tiện lợi - Không cần trả trước</span>
+                        </div>
+                        <div class="flex items-center justify-center text-sm text-green-600">
+                          <i class="ri-checkbox-circle-line mr-2"></i>
+                          <span>Kiểm tra hàng trước khi thanh toán</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </label>
                 </div>
 
                 <!-- VNPay - Thanh toán online -->
-                <div class="col-md-6 col-lg-5 mb-3">
-                  <div class="card payment-method border-primary h-100">
-                    <div class="card-body text-center">
-                      <input type="radio" class="form-check-input" id="vnpay" name="paymentMethod" value="vnpay">
-                      <label class="form-check-label w-100" for="vnpay">
-                        <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png" alt="VNPay" class="mb-3" style="height: 60px; object-fit: contain;">
-                        <h4 class="text-primary">VNPay</h4>
-                        <p class="text-muted mb-2">Thanh toán trực tuyến</p>
-                        <small class="text-info d-block"><i class="fas fa-shield-alt"></i> An toàn - Bảo mật cao</small>
-                        <small class="text-success d-block mt-1"><i class="fas fa-bolt"></i> Nhanh chóng - Tiện lợi</small>
-                      </label>
+                <div class="relative">
+                  <input type="radio" class="sr-only" id="vnpay" name="paymentMethod" value="vnpay">
+                  <label class="block cursor-pointer" for="vnpay">
+                    <div class="bg-white border-2 border-primary rounded-xl p-6 text-center h-full hover:shadow-lg transition-all duration-300">
+                      <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png" alt="VNPay" class="h-16 mx-auto mb-4 object-contain">
+                      <h4 class="text-xl font-bold text-primary mb-2">VNPay</h4>
+                      <p class="text-gray-600 mb-4">Thanh toán trực tuyến</p>
+                      <div class="space-y-2">
+                        <div class="flex items-center justify-center text-sm text-blue-600">
+                          <i class="ri-shield-check-line mr-2"></i>
+                          <span>An toàn - Bảo mật cao</span>
+                        </div>
+                        <div class="flex items-center justify-center text-sm text-green-600">
+                          <i class="ri-flashlight-line mr-2"></i>
+                          <span>Nhanh chóng - Tiện lợi</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </label>
                 </div>
               </div>
 
               <!-- Thông tin chi tiết thanh toán -->
-              <div id="payment-details" class="mt-4">
+              <div id="payment-details" class="mt-8">
                 <!-- COD Details -->
                 <div id="cod-details" class="payment-detail" style="display: block;">
-                  <div class="alert alert-warning border-warning">
-                    <h5 class="alert-heading"><i class="fas fa-truck"></i> Thanh toán khi nhận hàng (COD)</h5>
-                    <hr>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <p class="mb-2"><i class="fas fa-info-circle text-warning"></i> <strong>Cách thức:</strong>
-                          Thanh toán bằng tiền mặt khi nhận hàng</p>
-                        <p class="mb-2"><i class="fas fa-clock text-warning"></i> <strong>Thời gian giao:</strong> 2-3
-                          ngày làm việc</p>
-                        <p class="mb-2"><i class="fas fa-money-bill-wave text-warning"></i> <strong>Phí ship:</strong>
-                          30.000đ (miễn phí với đơn > 500.000đ)</p>
-                      </div>
-                      <div class="col-md-6">
-                        <p class="mb-2"><i class="fas fa-check-circle text-success"></i> <strong>Ưu điểm:</strong> Kiểm
-                          tra hàng trước khi thanh toán</p>
-                        <p class="mb-2"><i class="fas fa-handshake text-success"></i> <strong>An toàn:</strong> Không
-                          cần thanh toán trước</p>
-                        <p class="mb-0"><i class="fas fa-exchange-alt text-success"></i> <strong>Đổi trả:</strong> Dễ
-                          dàng nếu không hài lòng</p>
+                  <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                    <h5 class="text-lg font-semibold text-yellow-800 mb-4 flex items-center">
+                      <i class="ri-truck-line mr-2"></i> Thanh toán khi nhận hàng (COD)
+                    </h5>
+                    <div class="border-t border-yellow-200 pt-4">
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                          <p class="flex items-start text-sm">
+                            <i class="ri-information-line text-yellow-600 mr-2 mt-0.5"></i>
+                            <span><strong>Cách thức:</strong> Thanh toán bằng tiền mặt khi nhận hàng</span>
+                          </p>
+                          <p class="flex items-start text-sm">
+                            <i class="ri-time-line text-yellow-600 mr-2 mt-0.5"></i>
+                            <span><strong>Thời gian giao:</strong> 2-3 ngày làm việc</span>
+                          </p>
+                          <p class="flex items-start text-sm">
+                            <i class="ri-money-dollar-circle-line text-yellow-600 mr-2 mt-0.5"></i>
+                            <span><strong>Phí ship:</strong> 30.000đ (miễn phí với đơn > 500.000đ)</span>
+                          </p>
+                        </div>
+                        <div class="space-y-3">
+                          <p class="flex items-start text-sm">
+                            <i class="ri-checkbox-circle-line text-green-600 mr-2 mt-0.5"></i>
+                            <span><strong>Ưu điểm:</strong> Kiểm tra hàng trước khi thanh toán</span>
+                          </p>
+                          <p class="flex items-start text-sm">
+                            <i class="ri-hand-heart-line text-green-600 mr-2 mt-0.5"></i>
+                            <span><strong>An toàn:</strong> Không cần thanh toán trước</span>
+                          </p>
+                          <p class="flex items-start text-sm">
+                            <i class="ri-exchange-line text-green-600 mr-2 mt-0.5"></i>
+                            <span><strong>Đổi trả:</strong> Dễ dàng nếu không hài lòng</span>
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -109,36 +133,50 @@
 
                 <!-- VNPay Details -->
                 <div id="vnpay-details" class="payment-detail" style="display: none;">
-                  <div class="alert alert-primary border-primary">
-                    <h5 class="alert-heading"><i class="fas fa-credit-card"></i> Thanh toán qua VNPay</h5>
-                    <hr>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <p class="mb-2"><i class="fas fa-info-circle text-primary"></i> <strong>Cách thức:</strong>
-                          Thanh toán trực tuyến qua cổng VNPay</p>
-                        <p class="mb-2"><i class="fas fa-clock text-primary"></i> <strong>Thời gian xử lý:</strong> Tức thì</p>
-                        <p class="mb-2"><i class="fas fa-money-bill-wave text-primary"></i> <strong>Phí giao dịch:</strong>
-                          Miễn phí</p>
-                      </div>
-                      <div class="col-md-6">
-                        <p class="mb-2"><i class="fas fa-shield-alt text-success"></i> <strong>Bảo mật:</strong> Mã hóa
-                          SSL 256-bit</p>
-                        <p class="mb-2"><i class="fas fa-bolt text-success"></i> <strong>Nhanh chóng:</strong> Xác nhận
-                          thanh toán ngay lập tức</p>
-                        <p class="mb-0"><i class="fas fa-university text-success"></i> <strong>Hỗ trợ:</strong> Tất cả
-                          ngân hàng trong nước</p>
+                  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                    <h5 class="text-lg font-semibold text-blue-800 mb-4 flex items-center">
+                      <i class="ri-bank-card-line mr-2"></i> Thanh toán qua VNPay
+                    </h5>
+                    <div class="border-t border-blue-200 pt-4">
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                          <p class="flex items-start text-sm">
+                            <i class="ri-information-line text-blue-600 mr-2 mt-0.5"></i>
+                            <span><strong>Cách thức:</strong> Thanh toán trực tuyến qua cổng VNPay</span>
+                          </p>
+                          <p class="flex items-start text-sm">
+                            <i class="ri-time-line text-blue-600 mr-2 mt-0.5"></i>
+                            <span><strong>Thời gian xử lý:</strong> Tức thì</span>
+                          </p>
+                          <p class="flex items-start text-sm">
+                            <i class="ri-money-dollar-circle-line text-blue-600 mr-2 mt-0.5"></i>
+                            <span><strong>Phí giao dịch:</strong> Miễn phí</span>
+                          </p>
+                        </div>
+                        <div class="space-y-3">
+                          <p class="flex items-start text-sm">
+                            <i class="ri-shield-check-line text-green-600 mr-2 mt-0.5"></i>
+                            <span><strong>Bảo mật:</strong> Mã hóa SSL 256-bit</span>
+                          </p>
+                          <p class="flex items-start text-sm">
+                            <i class="ri-flashlight-line text-green-600 mr-2 mt-0.5"></i>
+                            <span><strong>Nhanh chóng:</strong> Xác nhận thanh toán ngay lập tức</span>
+                          </p>
+                          <p class="flex items-start text-sm">
+                            <i class="ri-bank-line text-green-600 mr-2 mt-0.5"></i>
+                            <span><strong>Hỗ trợ:</strong> Tất cả ngân hàng trong nước</span>
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
-
               </div>
             </div>
 
             <!-- Nút đặt hàng -->
-            <button type="button" onclick="processOrder()" class="btn btn-success btn-lg">
-              <i class="fas fa-check-circle"></i> Xác nhận đặt hàng
+            <button type="button" onclick="processOrder()" class="w-full bg-green-600 text-white py-4 px-8 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors duration-300 flex items-center justify-center mt-8">
+              <i class="ri-checkbox-circle-line mr-3"></i> Xác nhận đặt hàng
             </button>
           </form>
         </div>
@@ -174,7 +212,7 @@
           // Show loading
           const button = document.querySelector('button[onclick="processOrder()"]');
           const originalText = button.innerHTML;
-          button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+          button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-3"></i> Đang xử lý...';
           button.disabled = true;
           
           if (paymentMethod === 'vnpay') {

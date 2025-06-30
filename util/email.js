@@ -19,6 +19,32 @@ transporter.verify(function (error, success) {
     }
 });
 
+// Helper để hiển thị tên phương thức/thanh toán
+function getPaymentMethodDisplay(method) {
+    const methods = {
+        'cod': 'Thanh toán khi nhận hàng (COD)',
+        'bank': 'Chuyển khoản ngân hàng',
+        'bank_transfer': 'Chuyển khoản QR Code',
+        'ewallet': 'Ví điện tử',
+        'credit': 'Thẻ tín dụng/ghi nợ',
+        'vnpay': 'Thanh toán qua VNPay'
+    };
+    return methods[method] || 'Không xác định';
+}
+
+function getPaymentStatusDisplay(status) {
+    const statuses = {
+        'pending': 'Chờ thanh toán',
+        'awaiting_payment': 'Chờ chuyển khoản',
+        'processing': 'Đang xử lý',
+        'completed': 'Đã thanh toán',
+        'paid': 'Đã thanh toán',
+        'failed': 'Thanh toán thất bại',
+        'refunded': 'Đã hoàn tiền'
+    };
+    return statuses[status] || 'Không xác định';
+}
+
 // Gửi email xác nhận đơn hàng cho khách hàng
 const sendOrderConfirmation = async (order, user) => {
     try {
@@ -41,8 +67,8 @@ const sendOrderConfirmation = async (order, user) => {
                 <p>Email: ${order.shippingInfo?.email}</p>
                 <p>Địa chỉ: ${order.shippingInfo?.address}</p>
                 <h3>Thông tin thanh toán:</h3>
-                <p>Phương thức: ${order.getPaymentMethodDisplay()}</p>
-                <p>Trạng thái thanh toán: ${order.getPaymentStatusDisplay()}</p>
+                <p>Phương thức: ${getPaymentMethodDisplay(order.paymentMethod)}</p>
+                <p>Trạng thái thanh toán: ${getPaymentStatusDisplay(order.paymentStatus)}</p>
                 ${order.paymentMethod === 'bank' && order.paymentStatus === 'awaiting' ? `
                     <div style="background-color: #f0f8ff; padding: 15px; border-left: 4px solid #007bff; margin: 10px 0;">
                         <h4>Thông tin chuyển khoản:</h4>
@@ -136,8 +162,8 @@ const sendNewOrderNotification = async (order, user) => {
                 <p>Email: ${order.shippingInfo?.email}</p>
                 <p>Địa chỉ: ${order.shippingInfo?.address}</p>
                 <h3>Thông tin thanh toán:</h3>
-                <p>Phương thức: ${order.getPaymentMethodDisplay()}</p>
-                <p>Trạng thái thanh toán: ${order.getPaymentStatusDisplay()}</p>
+                <p>Phương thức: ${getPaymentMethodDisplay(order.paymentMethod)}</p>
+                <p>Trạng thái thanh toán: ${getPaymentStatusDisplay(order.paymentStatus)}</p>
                 <h3>Chi tiết sản phẩm:</h3>
                 <ul>
                     ${order.items.map(item => `

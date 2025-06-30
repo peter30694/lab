@@ -38,17 +38,22 @@
                     <div class="relative group">
                         <button class="flex items-center space-x-2 p-2 text-gray-700 hover:text-primary transition-colors">
                             <i class="ri-user-line text-xl"></i>
-                            <span class="hidden md:block"><%= user.name || user.email %></span>
+                            <span class="hidden md:block"><%= user.name || user.email || 'Người dùng' %></span>
                             <i class="ri-arrow-down-s-line"></i>
                         </button>
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <div class="px-4 py-2 text-sm text-gray-500 border-b">
+                                <i class="ri-user-circle"></i> <%= user.email || 'Không có email' %>
+                            </div>
                             <a href="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Thông tin cá nhân</a>
                             <a href="/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Đơn hàng</a>
-                            <% if (user.isAdmin) { %>
+                            <% if (user.role === 'admin') { %>
                                 <a href="/admin" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Quản trị</a>
                             <% } %>
                             <hr class="my-1">
-                            <a href="/logout" class="block px-4 py-2 text-red-600 hover:bg-gray-50">Đăng xuất</a>
+                            <form action="/logout" method="POST" class="block">
+                                <button type="submit" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">Đăng xuất</button>
+                            </form>
                         </div>
                     </div>
                 <% } else { %>

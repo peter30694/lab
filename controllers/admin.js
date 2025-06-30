@@ -13,7 +13,8 @@ exports.getAddProduct = (req, res, next) => {
         path: '/admin/add-product',
         editing: false,
         isAuthenticated: req.session.user ? true : false,
-        isAdmin: req.session.user && req.session.user.role === 'admin'
+        isAdmin: req.session.user && req.session.user.role === 'admin',
+        user: req.session.user || null
     });
 };
 
@@ -93,7 +94,8 @@ exports.getProducts = async (req, res, next) => {
             pageTitle: 'Quản lý sản phẩm',
             path: '/admin/products',
             isAuthenticated: req.session.user ? true : false,
-            isAdmin: req.session.user && req.session.user.role === 'admin'
+            isAdmin: req.session.user && req.session.user.role === 'admin',
+            user: req.session.user || null
         });
     } catch (err) {
         console.error('Lỗi khi lấy danh sách sản phẩm:', err);

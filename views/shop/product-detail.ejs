@@ -230,102 +230,109 @@
             }
         </style>
 
-        <main class="container py-5">
-            <div class="product-detail-container">
-                <div class="row">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
                     <!-- Ảnh sản phẩm -->
-                    <div class="col-lg-6">
-                        <div class="product-image-section">
+                    <div class="relative">
+                        <div class="relative overflow-hidden rounded-xl">
                             <img src="<%= product.imageUrl %>" alt="<%= product.title %>" 
-                                 class="product-detail-image">
-                            <div class="product-badges">
+                                 class="w-full h-96 object-cover hover:scale-105 transition-transform duration-300">
+                            <div class="absolute top-4 left-4 flex flex-col gap-2">
                                 <% if (product.isNew) { %>
-                                    <span class="badge bg-success">Mới</span>
+                                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Mới</span>
                                 <% } %>
                                 <% if (product.discount > 0) { %>
-                                    <span class="badge bg-danger">-<%= product.discount %>%</span>
+                                    <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">-<%= product.discount %>%</span>
                                 <% } %>
                             </div>
                         </div>
                     </div>
 
                     <!-- Thông tin sản phẩm -->
-                    <div class="col-lg-6">
-                        <div class="product-info-section">
-                            <h1 class="product-title"><%= product.title %></h1>
+                    <div class="space-y-6">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 mb-4"><%= product.title %></h1>
 
-                            <div class="price-section">
-                                <div class="d-flex align-items-center">
+                            <div class="mb-6">
+                                <div class="flex items-center gap-3 mb-3">
                                     <% if (product.oldPrice) { %>
-                                        <del class="original-price">
+                                        <del class="text-gray-500 text-lg">
                                             <%= product.oldPrice.toLocaleString('vi-VN') %> ₫
                                         </del>
                                     <% } %>
-                                    <span class="current-price">
+                                    <span class="text-3xl font-bold text-red-600">
                                         <%= product.price.toLocaleString('vi-VN') %> ₫
                                     </span>
                                 </div>
-                                <div class="product-rating">
-                                    <% for(let i = 0; i < 5; i++) { %>
-                                        <i class="fas fa-star <%= i < product.rating ? 'text-warning' : 'text-muted' %>"></i>
-                                    <% } %>
-                                    <span class="review-count">(<%= product.reviews || 0 %> đánh giá)</span>
-                                </div>
-                            </div>
-
-                            <div class="product-description">
-                                <h5 class="section-title">Mô tả sản phẩm</h5>
-                                <p><%= product.description %></p>
-                            </div>
-
-                            <div class="product-additional-info">
-                                <h5 class="section-title">Thông tin thêm</h5>
-                                <div class="info-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Tình trạng: 
-                                        <% if (product.inStock) { %>
-                                            <span class="text-success fw-bold">Còn hàng</span>
-                                        <% } else { %>
-                                            <span class="text-danger fw-bold">Hết hàng</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex">
+                                        <% for(let i = 0; i < 5; i++) { %>
+                                            <i class="ri-star-fill text-lg <%= i < product.rating ? 'text-yellow-400' : 'text-gray-300' %>"></i>
                                         <% } %>
-                                    </span>
-                                </div>
-                                <div class="info-item">
-                                    <i class="fas fa-shipping-fast"></i>
-                                    <span>Giao hàng: 2-3 ngày</span>
-                                </div>
-                                <div class="info-item">
-                                    <i class="fas fa-shield-alt"></i>
-                                    <span>Bảo hành: 12 tháng</span>
-                                </div>
-                                <div class="info-item">
-                                    <i class="fas fa-undo"></i>
-                                    <span>Đổi trả: 30 ngày</span>
+                                    </div>
+                                    <span class="text-gray-600">(<%= product.reviews || 0 %> đánh giá)</span>
                                 </div>
                             </div>
 
-                            <div class="purchase-section">
-                                <h5 class="section-title">Mua hàng</h5>
-                                <form action="/cart" method="POST">
-                                    <div class="quantity-control">
-                                        <label for="quantity" class="form-label">Số lượng:</label>
-                                        <input type="number" id="quantity" name="quantity" 
-                                               class="form-control quantity-input" value="1" 
-                                               min="1" max="<%= product.stockQuantity || 10 %>">
-                                        <span class="stock-info">
-                                            (<%= product.stockQuantity || 'N/A' %> sản phẩm có sẵn)
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h5 class="text-lg font-semibold text-gray-900 mb-3">Mô tả sản phẩm</h5>
+                                <p class="text-gray-700"><%= product.description %></p>
+                            </div>
+
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <h5 class="text-lg font-semibold text-gray-900 mb-4">Thông tin thêm</h5>
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <i class="ri-checkbox-circle-line text-blue-600"></i>
+                                        <span class="text-gray-700">Tình trạng: 
+                                            <% if (product.inStock) { %>
+                                                <span class="text-green-600 font-bold">Còn hàng</span>
+                                            <% } else { %>
+                                                <span class="text-red-600 font-bold">Hết hàng</span>
+                                            <% } %>
                                         </span>
                                     </div>
-                                    <input type="hidden" name="productId" value="<%= product._id %>">
-                                    <div class="action-buttons">
-                                        <button type="submit" class="btn btn-primary btn-add-to-cart">
-                                            <i class="fas fa-shopping-cart me-2"></i> Thêm vào giỏ
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger btn-wishlist">
-                                            <i class="fas fa-heart"></i>
-                                        </button>
+                                    <div class="flex items-center gap-3">
+                                        <i class="ri-truck-line text-blue-600"></i>
+                                        <span class="text-gray-700">Giao hàng: 2-3 ngày</span>
                                     </div>
-                                </form>
+                                    <div class="flex items-center gap-3">
+                                        <i class="ri-shield-check-line text-blue-600"></i>
+                                        <span class="text-gray-700">Bảo hành: 12 tháng</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <i class="ri-arrow-go-back-line text-blue-600"></i>
+                                        <span class="text-gray-700">Đổi trả: 30 ngày</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Số lượng:</label>
+                                    <div class="flex items-center border border-gray-300 rounded-lg w-32">
+                                        <button type="button" class="px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-l-lg transition-colors" onclick="decreaseQuantity()">-</button>
+                                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" class="w-16 text-center border-0 focus:ring-0 focus:outline-none">
+                                        <button type="button" class="px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-r-lg transition-colors" onclick="increaseQuantity()">+</button>
+                                    </div>
+                                </div>
+
+                                <% if (product.inStock) { %>
+                                    <form action="/add-to-cart" method="POST">
+                                        <input type="hidden" name="productId" value="<%= product._id %>">
+                                        <input type="hidden" name="quantity" id="hiddenQuantity" value="1">
+                                        <button type="submit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                            <i class="ri-shopping-cart-line text-lg"></i>
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    </form>
+                                <% } else { %>
+                                    <button class="w-full bg-red-100 text-red-600 py-3 px-6 rounded-lg font-semibold border border-red-300 cursor-not-allowed flex items-center justify-center gap-2" disabled>
+                                        <i class="ri-close-circle-line text-lg"></i>
+                                        Hết hàng
+                                    </button>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -333,79 +340,184 @@
             </div>
 
             <!-- Chi tiết sản phẩm -->
-            <div class="product-tabs">
-                <ul class="nav nav-tabs" id="productTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description-tab">
-                            Chi tiết sản phẩm
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="border-b border-gray-200">
+                    <nav class="flex space-x-8" aria-label="Tabs">
+                        <button class="tab-button active py-4 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600 whitespace-nowrap" 
+                                onclick="showTab('description')" id="description-tab">
+                            <i class="ri-information-line mr-2"></i> Mô tả chi tiết
                         </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#specifications-tab">
-                            Thông số kỹ thuật
+                        <button class="tab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" 
+                                onclick="showTab('specifications')" id="specifications-tab">
+                            <i class="ri-list-check mr-2"></i> Thông số kỹ thuật
                         </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews-tab">
-                            Đánh giá (<%= product.reviews || 0 %>)
+                        <button class="tab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" 
+                                onclick="showTab('reviews')" id="reviews-tab">
+                            <i class="ri-star-line mr-2"></i> Đánh giá (<%= product.reviews || 0 %>)
                         </button>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane fade show active" id="description-tab">
-                        <% if (product.detailDescription) { %>
-                            <%- product.detailDescription %>
-                        <% } else { %>
-                            <p class="text-muted">Chưa có mô tả chi tiết.</p>
+                    </nav>
+                </div>
+                <div class="p-6">
+                    <div class="tab-content" id="description" style="display: block;">
+                        <h5 class="text-lg font-semibold text-gray-900 mb-4">Mô tả chi tiết</h5>
+                        <p class="text-gray-700 mb-4"><%= product.description %></p>
+                        <% if (product.features && product.features.length > 0) { %>
+                            <h6 class="text-md font-semibold text-gray-900 mb-3">Tính năng nổi bật:</h6>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <% product.features.forEach(feature => { %>
+                                    <li><%= feature %></li>
+                                <% }); %>
+                            </ul>
                         <% } %>
                     </div>
-                    <div class="tab-pane fade" id="specifications-tab">
-                        <table class="table">
-                            <tbody>
-                                <% if (product.specifications) { %>
-                                    <% Object.entries(product.specifications).forEach(([key, value])=> { %>
-                                        <tr>
-                                            <th scope="row" style="width: 30%"><%= key %></th>
-                                            <td><%= value %></td>
-                                        </tr>
-                                    <% }) %>
-                                <% } %>
-                            </tbody>
-                        </table>
+                    <div class="tab-content" id="specifications" style="display: none;">
+                        <h5 class="text-lg font-semibold text-gray-900 mb-4">Thông số kỹ thuật</h5>
+                        <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-300">
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr class="bg-gray-50">
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-900">Danh mục:</td>
+                                        <td class="px-6 py-4 text-sm text-gray-700"><%= product.category %></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-900">Thương hiệu:</td>
+                                        <td class="px-6 py-4 text-sm text-gray-700"><%= product.brand || 'Không xác định' %></td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-900">Xuất xứ:</td>
+                                        <td class="px-6 py-4 text-sm text-gray-700"><%= product.origin || 'Không xác định' %></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-900">Bảo hành:</td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">12 tháng</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="tab-pane fade" id="reviews-tab">
-                        <p class="text-muted">Chưa có đánh giá nào.</p>
+                    <div class="tab-content" id="reviews" style="display: none;">
+                        <h5 class="text-lg font-semibold text-gray-900 mb-4">Đánh giá khách hàng</h5>
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                            <div class="flex items-center gap-4">
+                                <span class="text-3xl font-bold text-gray-900"><%= product.rating || 0 %></span>
+                                <div>
+                                    <div class="flex mb-1">
+                                        <% for(let i = 0; i < 5; i++) { %>
+                                            <i class="ri-star-fill text-lg <%= i < product.rating ? 'text-yellow-400' : 'text-gray-300' %>"></i>
+                                        <% } %>
+                                    </div>
+                                    <span class="text-gray-600">(<%= product.reviews || 0 %> đánh giá)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center py-8">
+                            <i class="ri-chat-3-line text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-500">Chưa có đánh giá nào cho sản phẩm này.</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Sản phẩm liên quan -->
-            <div class="related-products">
-                <h3 class="mb-4">Sản phẩm tương tự</h3>
-                <div class="row">
-                    <% if (relatedProducts && relatedProducts.length > 0) { %>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Sản phẩm liên quan</h3>
+                <% if (relatedProducts && relatedProducts.length > 0) { %>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <% relatedProducts.forEach(relatedProduct => { %>
-                            <div class="col-md-3 mb-4">
-                                <div class="card related-product-card">
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                                <div class="relative">
                                     <img src="<%= relatedProduct.imageUrl %>" 
-                                         class="card-img-top related-product-image"
+                                         class="w-full h-48 object-cover" 
                                          alt="<%= relatedProduct.title %>">
-                                    <div class="card-body">
-                                        <h5 class="related-product-title"><%= relatedProduct.title %></h5>
-                                        <p class="related-product-price">
+                                    <% if (relatedProduct.isNew) { %>
+                                        <span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">Mới</span>
+                                    <% } %>
+                                    <% if (relatedProduct.discount) { %>
+                                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">-<%= relatedProduct.discount %>%</span>
+                                    <% } %>
+                                </div>
+                                <div class="p-4">
+                                    <h5 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2"><%= relatedProduct.title %></h5>
+                                    <div class="mb-3">
+                                        <% if (relatedProduct.oldPrice) { %>
+                                            <del class="text-gray-500 text-sm mr-2">
+                                                <%= relatedProduct.oldPrice.toLocaleString('vi-VN') %> ₫
+                                            </del>
+                                        <% } %>
+                                        <span class="text-lg font-bold text-red-600">
                                             <%= relatedProduct.price.toLocaleString('vi-VN') %> ₫
-                                        </p>
-                                        <a href="/products/<%= relatedProduct._id %>"
-                                           class="btn btn-outline-primary">Xem chi tiết</a>
+                                        </span>
                                     </div>
+                                    <div class="flex items-center mb-3">
+                                        <% for(let i = 0; i < 5; i++) { %>
+                                            <i class="ri-star-fill text-sm <%= i < relatedProduct.rating ? 'text-yellow-400' : 'text-gray-300' %>"></i>
+                                        <% } %>
+                                    </div>
+                                    <a href="/products/<%= relatedProduct._id %>" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                        <i class="ri-eye-line"></i> Xem chi tiết
+                                    </a>
                                 </div>
                             </div>
-                        <% }) %>
-                    <% } else { %>
-                        <p class="text-muted">Không có sản phẩm tương tự.</p>
-                    <% } %>
-                </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-8">
+                        <i class="ri-shopping-bag-line text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-500">Không có sản phẩm liên quan.</p>
+                    </div>
+                <% } %>
             </div>
         </main>
+
+    <script>
+        function increaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const hiddenQuantity = document.getElementById('hiddenQuantity');
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue < parseInt(quantityInput.max)) {
+                quantityInput.value = currentValue + 1;
+                hiddenQuantity.value = quantityInput.value;
+            }
+        }
+
+        function decreaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const hiddenQuantity = document.getElementById('hiddenQuantity');
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue > parseInt(quantityInput.min)) {
+                quantityInput.value = currentValue - 1;
+                hiddenQuantity.value = quantityInput.value;
+            }
+        }
+
+        // Cập nhật hidden input khi thay đổi quantity
+        document.getElementById('quantity').addEventListener('change', function() {
+            document.getElementById('hiddenQuantity').value = this.value;
+        });
+
+        // Xử lý tab switching
+        function showTab(tabName) {
+            // Ẩn tất cả tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Loại bỏ active class từ tất cả tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                button.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            // Hiển thị tab được chọn
+            document.getElementById(tabName).style.display = 'block';
+
+            // Thêm active class cho tab button được chọn
+            const activeButton = document.getElementById(tabName + '-tab');
+            activeButton.classList.add('active', 'border-blue-500', 'text-blue-600');
+            activeButton.classList.remove('border-transparent', 'text-gray-500');
+        }
+    </script>
 
     <%- include('../includes/end.ejs') %>

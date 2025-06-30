@@ -1,3 +1,5 @@
+/* Đã loại bỏ toàn bộ style Bootstrap/custom cũ. Nếu cần custom, hãy dùng @apply hoặc Tailwind config. */
+
 .product-form {
     width: 20rem;
     max-width: 90%;

@@ -1,7 +1,7 @@
 const VNPay = require('../util/vnpay');
 const Order = require('../models/order');
 const User = require('../models/user');
-const { sendEmail } = require('../util/email');
+const { sendEmail, sendOrderConfirmation } = require('../util/email');
 
 const vnpay = new VNPay();
 
@@ -27,16 +27,14 @@ exports.createPayment = async (req, res, next) => {
         }
 
         const products = cart.items.map(item => ({
+            productId: item._id,
             quantity: item.quantity,
-            product: {
-                _id: item._id,
-                title: item.title,
-                price: item.price,
-                imageUrl: item.imageUrl
-            }
+            title: item.title,
+            price: item.price,
+            imageUrl: item.imageUrl
         }));
 
-        const subtotal = products.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+        const subtotal = products.reduce((total, item) => total + (item.price * item.quantity), 0);
         const shippingFee = subtotal >= 500000 ? 0 : 30000;
         const totalAmount = subtotal + shippingFee;
 
@@ -66,6 +64,9 @@ exports.createPayment = async (req, res, next) => {
             ipAddr
         );
 
+        // Lưu paymentUrl vào đơn hàng
+        await Order.updatePaymentUrl(savedOrder.insertedId, paymentUrl);
+
         res.json({
             success: true,
             paymentUrl,
@@ -81,6 +82,8 @@ exports.createPayment = async (req, res, next) => {
 // Xử lý Return URL từ VNPay
 exports.vnpayReturn = async (req, res, next) => {
     try {
+        console.log('--- VNPay Return Callback ---');
+        console.log('Query params:', req.query);
         let vnp_Params = { ...req.query };
         const isValidSignature = vnpay.verifyReturnUrl(vnp_Params);
 
@@ -100,8 +103,16 @@ exports.vnpayReturn = async (req, res, next) => {
         const transactionNo = vnp_Params.vnp_TransactionNo;
         const bankCode = vnp_Params.vnp_BankCode;
 
-        const rawOrder = await Order.findById(orderId);
+        // Sửa: luôn thử tìm bằng ObjectId trước, nếu lỗi thì fallback sang string
+        const mongodb = require('mongodb');
+        let rawOrder = null;
+        try {
+            rawOrder = await Order.findById(new mongodb.ObjectId(orderId));
+        } catch (e) {
+            rawOrder = await Order.findById(orderId);
+        }
         if (!rawOrder) {
+            console.error('Không tìm thấy đơn hàng với orderId:', orderId);
             return res.render('shop/payment-result', {
                 pageTitle: 'Không tìm thấy đơn hàng',
                 path: '/payment-result',
@@ -111,10 +122,18 @@ exports.vnpayReturn = async (req, res, next) => {
             });
         }
 
+        // Log kiểm tra số tiền
+        if (rawOrder.totalPrice !== amount) {
+            console.error('Số tiền không khớp:', rawOrder.totalPrice, amount);
+        }
+
         // Tạo lại instance đúng
+        const orderItems = Array.isArray(rawOrder.items) && rawOrder.items.length > 0
+            ? rawOrder.items
+            : (Array.isArray(rawOrder.products) ? rawOrder.products : []);
         const order = new Order(
             rawOrder.userId,
-            rawOrder.products,
+            orderItems,
             rawOrder.totalPrice,
             rawOrder.shippingInfo,
             rawOrder.paymentMethod
@@ -125,6 +144,7 @@ exports.vnpayReturn = async (req, res, next) => {
         if (responseCode === '00') {
             if (order.status !== 'paid') {
                 order.status = 'paid';
+                order.paymentStatus = 'paid';
                 order.paymentMethod = 'vnpay';
                 order.paymentDetails = {
                     transactionNo,
@@ -146,13 +166,7 @@ exports.vnpayReturn = async (req, res, next) => {
                 }
 
                 try {
-                    if (order.shippingInfo?.email) {
-                        await sendEmail(
-                            order.shippingInfo.email,
-                            'Xác nhận thanh toán đơn hàng',
-                            `Đơn hàng #${orderId} đã được thanh toán thành công qua VNPay.\n\nMã giao dịch: ${transactionNo}\nSố tiền: ${amount.toLocaleString('vi-VN')}đ\n\nCảm ơn bạn đã mua hàng!`
-                        );
-                    }
+                    await sendOrderConfirmation(order, { name: order.shippingInfo?.name, email: order.shippingInfo?.email });
                 } catch (err) {
                     console.error('Lỗi gửi email xác nhận:', err);
                 }
@@ -170,6 +184,7 @@ exports.vnpayReturn = async (req, res, next) => {
 
         } else {
             order.status = 'payment_failed';
+            order.paymentStatus = 'failed';
             order.paymentDetails = {
                 responseCode,
                 failedAt: new Date(),
@@ -201,6 +216,8 @@ exports.vnpayReturn = async (req, res, next) => {
 // Xử lý IPN từ VNPay
 exports.vnpayIPN = async (req, res, next) => {
     try {
+        console.log('--- VNPay IPN Callback ---');
+        console.log('Query params:', req.query);
         let vnp_Params = { ...req.query };
         const isValidSignature = vnpay.verifyReturnUrl(vnp_Params);
 
@@ -215,9 +232,12 @@ exports.vnpayIPN = async (req, res, next) => {
         const rawOrder = await Order.findById(orderId);
         if (!rawOrder) return res.json({ RspCode: '01', Message: 'Order not found' });
 
+        const orderItems = Array.isArray(rawOrder.items) && rawOrder.items.length > 0
+            ? rawOrder.items
+            : (Array.isArray(rawOrder.products) ? rawOrder.products : []);
         const order = new Order(
             rawOrder.userId,
-            rawOrder.products,
+            orderItems,
             rawOrder.totalPrice,
             rawOrder.shippingInfo,
             rawOrder.paymentMethod
@@ -232,6 +252,7 @@ exports.vnpayIPN = async (req, res, next) => {
         if (responseCode === '00') {
             if (order.status !== 'paid') {
                 order.status = 'paid';
+                order.paymentStatus = 'paid';
                 order.paymentMethod = 'vnpay';
                 order.paymentDetails = {
                     transactionNo: vnp_Params.vnp_TransactionNo,
@@ -243,6 +264,7 @@ exports.vnpayIPN = async (req, res, next) => {
             }
         } else {
             order.status = 'payment_failed';
+            order.paymentStatus = 'failed';
             order.paymentDetails = {
                 responseCode,
                 failedAt: new Date(),

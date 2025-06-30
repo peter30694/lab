@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for Tailwind components */
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:bg-blue-700 hover:scale-105;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold border-2 border-blue-600 transition-all duration-300 hover:bg-blue-600 hover:text-white;
+  }
+  
+  .category-card {
+    @apply bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2;
+  }
+  
+  .product-card {
+    @apply bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+} 

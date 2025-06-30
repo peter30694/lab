@@ -80,14 +80,36 @@ router.post('/cart-update-quantity', isAuth, shopController.postCartUpdateQuanti
 // Đơn hàng - cần đăng nhập
 router.post('/orders', isAuth, shopController.postOrder);
 router.get('/orders', isAuth, shopController.getOrders);
+router.post('/orders/:orderId/delete', shopController.deleteOrder);
+router.post('/orders/delete-all', shopController.deleteAllOrders);
 
 // Route tải xuống hóa đơn cho người dùng
 router.get('/download-invoice/:orderId', isAuth, shopController.getDownloadInvoice);
 
 router.get('/checkout', isAuth, shopController.getCheckout);
 
-
-
-
+// Route test gửi email
+router.get('/test-email', async (req, res) => {
+  const fakeOrder = {
+    _id: 'TEST123',
+    totalPrice: 100000,
+    shippingInfo: {
+      name: 'Test User',
+      phone: '0123456789',
+      email: 'findsomethingfromu@gmail.com', // ← Email thật của bạn
+      address: 'Test Address'
+    },
+    paymentMethod: 'cod',
+    paymentStatus: 'pending',
+    items: [
+      { title: 'Sản phẩm A', quantity: 1, price: 50000 },
+      { title: 'Sản phẩm B', quantity: 2, price: 25000 }
+    ],
+    createdAt: new Date()
+  };
+  const fakeUser = { name: 'Test User', email: 'findsomethingfromu@gmail.com' }; // ← Email thật của bạn
+  const result = await sendOrderConfirmation(fakeOrder, fakeUser);
+  res.send(result ? 'Gửi email thành công!' : 'Gửi email thất bại!');
+});
 
 module.exports = router;

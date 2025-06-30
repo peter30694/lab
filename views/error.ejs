@@ -1,19 +1,25 @@
 <%- include('includes/head.ejs') %>
-    <%- include('includes/navigation.ejs') %>
+    <body class="bg-gray-50">
+        <%- include('includes/navigation.ejs') %>
 
-        <main>
-            <section class="error-page">
-                <div class="error-content">
-                    <h1>Oops! Có lỗi xảy ra</h1>
-                    <p>
+        <main class="min-h-screen flex items-center justify-center px-4">
+            <div class="text-center max-w-md mx-auto">
+                <div class="mb-8">
+                    <i class="ri-alert-line text-8xl text-red-500 mb-4"></i>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-4">Oops! Có lỗi xảy ra</h1>
+                    <p class="text-lg text-gray-600 mb-8 bg-red-50 border border-red-200 rounded-lg p-4">
                         <%= error %>
                     </p>
-                    <div class="error-actions">
-                        <a href="/" class="btn">Về trang chủ</a>
-                        <a href="/products" class="btn btn--secondary">Xem sản phẩm</a>
-                    </div>
                 </div>
-            </section>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center">
+                        <i class="ri-home-line mr-2"></i> Về trang chủ
+                    </a>
+                    <a href="/products" class="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center">
+                        <i class="ri-shopping-bag-line mr-2"></i> Xem sản phẩm
+                    </a>
+                </div>
+            </div>
         </main>
 
         <%- include('includes/end.ejs') %>

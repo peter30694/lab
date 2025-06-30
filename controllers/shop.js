@@ -70,7 +70,8 @@ exports.getProducts = async (req, res, next) => {
             activeShop: true,
             productCSS: true,
             isAuthenticated: req.session.user ? true : false,
-            isAdmin: req.session.user && req.session.user.role === 'admin'
+            isAdmin: req.session.user && req.session.user.role === 'admin',
+            user: req.session.user || null
         });
     } catch (err) {
         console.log(err);
@@ -110,7 +111,8 @@ exports.getProduct = async (req, res, next) => {
             activeShop: true,
             productCSS: true,
             isAuthenticated: req.session.user ? true : false,
-            isAdmin: req.session.user && req.session.user.role === 'admin'
+            isAdmin: req.session.user && req.session.user.role === 'admin',
+            user: req.session.user || null
         });
     } catch (err) {
         console.log(err);
@@ -138,7 +140,8 @@ exports.getIndex = async (req, res, next) => {
             activeShop: true,
             productCSS: true,
             isAuthenticated: req.session.user ? true : false,
-            isAdmin: req.session.user && req.session.user.role === 'admin'
+            isAdmin: req.session.user && req.session.user.role === 'admin',
+            user: req.session.user || null
         });
     } catch (err) {
         console.log(err);
@@ -147,7 +150,8 @@ exports.getIndex = async (req, res, next) => {
             path: '/error',
             error: 'Không thể tải trang chủ',
             isAuthenticated: req.session.user ? true : false,
-            isAdmin: req.session.user && req.session.user.role === 'admin'
+            isAdmin: req.session.user && req.session.user.role === 'admin',
+            user: req.session.user || null
         });
     }
 };
@@ -177,7 +181,8 @@ exports.getCart = async (req, res, next) => {
             totalPrice: cart.totalPrice || 0,
             activeCart: true,
             isAuthenticated: req.session.user ? true : false,
-            isAdmin: req.session.user && req.session.user.role === 'admin'
+            isAdmin: req.session.user && req.session.user.role === 'admin',
+            user: req.session.user || null
         });
     } catch (err) {
         console.error('Lỗi khi tải giỏ hàng:\n', err.stack || err);
@@ -363,6 +368,9 @@ exports.postCartUpdateQuantity = async (req, res, next) => {
 
 exports.postOrder = async (req, res, next) => {
   try {
+    console.log('🛒 Starting postOrder controller');
+    console.log('🛒 Request body:', req.body);
+    
     if (!req.session.user || !req.session.user._id) {
       return res.status(401).json({
         success: false,
@@ -371,6 +379,8 @@ exports.postOrder = async (req, res, next) => {
     }
 
     const { paymentMethod, name, phone, email, address, note } = req.body;
+    
+    console.log('🛒 Shipping info:', { name, phone, email, address });
     
     // Validate payment method
     const validPaymentMethods = ['cod', 'vnpay'];
@@ -404,19 +414,17 @@ exports.postOrder = async (req, res, next) => {
 
     const products = cart.items.map(item => {
       return {
+        productId: item._id,
         quantity: item.quantity,
-        product: {
-          _id: item._id,
-          title: item.title,
-          price: item.price,
-          imageUrl: item.imageUrl
-        }
+        title: item.title,
+        price: item.price,
+        imageUrl: item.imageUrl
       };
     });
 
     // Calculate total
     const subtotal = products.reduce((total, item) => {
-      return total + (item.product.price * item.quantity);
+      return total + (item.price * item.quantity);
     }, 0);
     
     const shippingFee = subtotal >= 500000 ? 0 : 30000;
@@ -434,6 +442,9 @@ exports.postOrder = async (req, res, next) => {
       },
       paymentMethod
     );
+    
+    console.log('🛒 Order created with shipping info:', order.shippingInfo);
+    
     order.shippingFee = shippingFee;
     order.paymentStatus = 'pending';
     order.orderStatus = 'pending';
@@ -441,6 +452,9 @@ exports.postOrder = async (req, res, next) => {
     order.orderDate = new Date();
 
     const savedOrder = await order.save();
+    
+    console.log('🛒 Order saved successfully:', savedOrder);
+    console.log('🛒 Saved order ID:', savedOrder.insertedId || savedOrder._id);
 
     // Handle different payment methods
     if (paymentMethod === 'cod') {
@@ -448,6 +462,15 @@ exports.postOrder = async (req, res, next) => {
       await Order.updateStatus(savedOrder._id, 'confirmed');
       await Order.updatePaymentStatus(savedOrder._id, 'pending');
       
+      // Gửi email xác nhận đơn hàng cho khách
+      try {
+        await sendOrderConfirmation({
+          ...order,
+          _id: savedOrder.insertedId || savedOrder._id
+        }, user);
+      } catch (err) {
+        console.error('❌ Lỗi khi gửi email xác nhận đơn hàng COD:', err);
+      }
       // Clear cart
       await user.clearCart();
       
@@ -464,7 +487,11 @@ exports.postOrder = async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.error('Error creating order:', error);
+    console.error('🚨 Error creating order:', error);
+    console.error('🚨 Error name:', error.name);
+    console.error('🚨 Error message:', error.message);
+    console.error('🚨 Error stack:', error.stack);
+    
     return res.status(500).json({
       success: false,
       message: 'Có lỗi xảy ra khi tạo đơn hàng: ' + error.message
@@ -496,14 +523,39 @@ exports.getOrders = async (req, res, next) => {
         console.log('🛒 Finding orders for user');
         const orders = await Order.findByUserId(user._id);
         console.log('🛒 Found orders:', orders.length);
+        
+        // Debug: Log first order structure if exists
+        if (orders.length > 0) {
+            console.log('🔍 DEBUG - First order structure:', JSON.stringify(orders[0], null, 2));
+        }
 
-        // ✅ Đảm bảo tất cả order đều có .items là array
+        // ✅ Đảm bảo tất cả order đều có .items là array và totalPrice
         const cleanedOrders = orders.map(order => {
+            // Calculate totalPrice if it's missing
+            let totalPrice = order.totalPrice;
+            if (!totalPrice && order.items && Array.isArray(order.items)) {
+                totalPrice = order.items.reduce((sum, item) => {
+                    return sum + (item.price * item.quantity);
+                }, 0);
+            }
+            
             return {
                 ...order,
                 items: Array.isArray(order.items)
                     ? order.items
-                    : (Array.isArray(order.products) ? order.products : [])
+                    : (Array.isArray(order.products) ? order.products : []),
+                totalPrice: totalPrice || 0,
+                status: order.status || 'pending',
+                paymentStatus: order.paymentStatus || 'pending',
+                paymentMethod: order.paymentMethod || 'cod',
+                shippingInfo: order.shippingInfo || {
+                    name: 'N/A',
+                    phone: 'N/A',
+                    email: 'N/A',
+                    address: 'N/A'
+                },
+                createdAt: order.createdAt || new Date(),
+                updatedAt: order.updatedAt || new Date()
             };
         });
 
@@ -677,6 +729,44 @@ exports.getCheckout = async (req, res, next) => {
             isAuthenticated: req.session.user ? true : false,
             isAdmin: req.session.user && req.session.user.role === 'admin'
         });
+    }
+};
+
+exports.deleteOrder = async (req, res, next) => {
+    try {
+        const orderId = req.params.orderId;
+        const userId = req.session.user && req.session.user._id;
+        if (!userId) {
+            return res.status(401).send('Bạn chưa đăng nhập');
+        }
+        const Order = require('../models/order');
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).send('Không tìm thấy đơn hàng');
+        }
+        if (order.userId.toString() !== userId.toString()) {
+            return res.status(403).send('Bạn không có quyền xóa đơn hàng này');
+        }
+        await Order.deleteById(orderId);
+        res.redirect('/orders');
+    } catch (err) {
+        console.error('Lỗi xóa đơn hàng:', err);
+        res.status(500).send('Lỗi khi xóa đơn hàng');
+    }
+};
+
+exports.deleteAllOrders = async (req, res, next) => {
+    try {
+        const userId = req.session.user && req.session.user._id;
+        if (!userId) {
+            return res.status(401).send('Bạn chưa đăng nhập');
+        }
+        const Order = require('../models/order');
+        await Order.deleteAllByUserId(userId);
+        res.redirect('/orders');
+    } catch (err) {
+        console.error('Lỗi xóa tất cả đơn hàng:', err);
+        res.status(500).send('Lỗi khi xóa tất cả đơn hàng');
     }
 };
 

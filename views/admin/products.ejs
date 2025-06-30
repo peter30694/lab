@@ -1,160 +1,75 @@
 <%- include('../includes/head.ejs') %>
-    <link rel="stylesheet" href="/css/product.css">
-    <style>
-        .product-card {
-            transition: transform 0.2s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-img-top {
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .price-tag {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #28a745;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-top: auto;
-        }
-
-        .action-buttons .btn {
-            flex: 1;
-        }
-
-        .card-body {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .card-text {
-            flex-grow: 1;
-        }
-
-        .card-footer {
-            background: transparent;
-            border-top: none;
-            padding: 1rem;
-        }
-
-        .export-pdf-btn {
-            margin-bottom: 20px;
-        }
-    </style>
-    </head>
-
-    <body>
-        <%- include('../includes/navigation.ejs') %>
-
-            <main>
-                <div class="container mt-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h1 class="text-primary">
-                            <i class="fas fa-boxes"></i> Quản lý sản phẩm
-                        </h1>
-                        <div>
-                            <div class="dropdown d-inline-block me-2">
-                                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-file-pdf"></i> Xuất PDF
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="/admin/export-products-pdf">
-                                            <i class="fas fa-download"></i> Xuất tất cả
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="/admin/export-products-pdf?sortBy=price-asc">
-                                            <i class="fas fa-sort-amount-down"></i> Xuất theo giá tăng dần
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="/admin/export-products-pdf?sortBy=price-desc">
-                                            <i class="fas fa-sort-amount-up"></i> Xuất theo giá giảm dần
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="/admin/export-products-pdf?sortBy=name-asc">
-                                            <i class="fas fa-sort-alpha-down"></i> Xuất theo tên A-Z
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="/admin/export-products-pdf?sortBy=name-desc">
-                                            <i class="fas fa-sort-alpha-up"></i> Xuất theo tên Z-A
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <a href="/admin/add-product" class="btn btn-primary btn-lg">
-                                <i class="fas fa-plus-circle"></i> Thêm sản phẩm mới
-                            </a>
-                        </div>
-                    </div>
-
-                    <% if (prods && prods.length> 0) { %>
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                            <% for (let product of prods) { %>
-                                <div class="col">
-                                    <div class="card h-100 product-card">
-                                        <img src="<%= product.imageUrl %>" class="card-img-top"
-                                            alt="<%= product.title %>">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-primary">
-                                                <%= product.title %>
-                                            </h5>
-                                            <p class="price-tag mb-2">
-                                                <%= (product.price || 0).toLocaleString('vi-VN') %> VNĐ
-                                            </p>
-                                            <p class="card-text text-muted">
-                                                <%= product.description %>
-                                            </p>
-                                            <div class="stock-info mb-2">
-                                                <span class="badge <%= product.stockQuantity > 0 ? 'bg-success' : 'bg-danger' %>">
-                                                    <i class="fas fa-box"></i> Tồn kho: <%= product.stockQuantity || 0 %>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer">
-                                            <div class="action-buttons">
-                                                <a href="/admin/edit-product/<%= product._id %>?edit=true"
-                                                    class="btn btn-outline-primary">
-                                                    <i class="fas fa-edit"></i> Sửa
-                                                </a>
-                                                <form action="/admin/delete-product" method="POST" class="d-inline">
-                                                    <input type="hidden" name="productId" value="<%= product._id %>">
-                                                    <button type="submit" class="btn btn-outline-danger"
-                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
-                                                        <i class="fas fa-trash-alt"></i> Xóa
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% } %>
-                        </div>
-                        <% } else { %>
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> Chưa có sản phẩm nào.
-                                <a href="/admin/add-product" class="alert-link">Thêm sản phẩm mới</a>
-                            </div>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <%- include('../includes/navigation.ejs') %>
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-blue-700 flex items-center gap-2">
+                <i class="fas fa-boxes"></i> Quản lý sản phẩm
+            </h1>
+            <a href="/admin/add-product" class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-blue-700 transition">
+                <i class="fas fa-plus-circle"></i> Thêm sản phẩm mới
+            </a>
+        </div>
+        <% if (prods && prods.length > 0) { %>
+        <div class="overflow-x-auto rounded-lg shadow bg-white">
+            <table class="min-w-full text-sm text-left">
+                <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+                    <tr>
+                        <th class="p-4">Ảnh</th>
+                        <th class="p-4">Tên sản phẩm</th>
+                        <th class="p-4">Giá</th>
+                        <th class="p-4">Mô tả</th>
+                        <th class="p-4">Tồn kho</th>
+                        <th class="p-4 text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let product of prods) { %>
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-4">
+                            <img src="<%= product.imageUrl %>" alt="<%= product.title %>" class="w-16 h-16 object-cover rounded shadow" onerror="this.src='/images/default-product.jpg'">
+                        </td>
+                        <td class="p-4 font-semibold text-blue-800 max-w-[180px] truncate">
+                            <%= product.title %>
+                        </td>
+                        <td class="p-4 text-green-600 font-bold">
+                            <%= (product.price || 0).toLocaleString('vi-VN') %> VNĐ
+                        </td>
+                        <td class="p-4 text-gray-600 max-w-[250px] truncate">
+                            <%= product.description %>
+                        </td>
+                        <td class="p-4">
+                            <% if (product.stockQuantity > 0) { %>
+                                <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Còn: <%= product.stockQuantity %></span>
+                            <% } else { %>
+                                <span class="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">Hết hàng</span>
                             <% } %>
-                </div>
-            </main>
-
-            <%- include('../includes/end.ejs') %>
+                        </td>
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="/admin/edit-product/<%= product._id %>?edit=true" class="px-3 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 font-medium transition flex items-center gap-1">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <form action="/admin/delete-product" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                                    <input type="hidden" name="productId" value="<%= product._id %>">
+                                    <button type="submit" class="px-3 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 font-medium transition flex items-center gap-1">
+                                        <i class="fas fa-trash-alt"></i> Xoá
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <% } else { %>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center mt-12">
+            <i class="fas fa-info-circle text-3xl text-blue-400 mb-4"></i>
+            <h2 class="text-lg font-semibold text-blue-700 mb-2">Chưa có sản phẩm nào.</h2>
+            <a href="/admin/add-product" class="inline-block mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">Thêm sản phẩm mới</a>
+        </div>
+        <% } %>
+    </main>
+    <%- include('../includes/end.ejs') %>
