@@ -61,12 +61,7 @@ const generateOrderPDF = async (order, user) => {
             });
 
             const writeStream = fs.createWriteStream(filePath);
-
-            writeStream.on('error', (error) => {
-                console.error('Error writing to file:', error);
-                reject(error);
-            });
-
+            writeStream.on('error', (error) => reject(error));
             doc.pipe(writeStream);
 
             // --- Variables & Colors ---
@@ -75,7 +70,7 @@ const generateOrderPDF = async (order, user) => {
             const contentWidth = doc.page.width - pageMargins.left - pageMargins.right;
             const endY = doc.page.height - pageMargins.bottom;
             let currentY = startY;
-            const lineGap = 3;
+            const lineGap = 4;
             const primaryColor = '#2563EB';
             const greyColor = '#F3F4F6';
             const darkGreyColor = '#E5E7EB';
@@ -93,143 +88,140 @@ const generateOrderPDF = async (order, user) => {
             };
             
             // --- Invoice Title ---
-            addNewPageIfNeeded(30);
+            addNewPageIfNeeded(36);
             doc.font('Helvetica-Bold').fontSize(20).fillColor(textColor)
-               .text('INVOICE', pageMargins.left, currentY, { align: 'center', width: contentWidth });
-            currentY += 30;
+               .text('ORDER INVOICE', pageMargins.left, currentY, { align: 'center', width: contentWidth });
+            currentY += 28;
             drawLine(doc, currentY);
-            currentY += 15;
+            currentY += 8;
 
-            // --- Order & Customer Info Boxes ---
-            addNewPageIfNeeded(80);
-            const infoBoxWidth = contentWidth / 2 - 10;
+            // --- Info Boxes (side by side, same height, balanced, sát bảng) ---
+            addNewPageIfNeeded(120);
+            const infoBoxGap = 12;
+            const infoBoxWidth = (contentWidth - infoBoxGap) / 2;
+            const infoBoxHeight = 110;
             const infoBoxStartY = currentY;
+            const infoBoxPadX = 18;
+            const infoBoxPadY = 16;
 
             // Box 1: Order Info
-            doc.rect(pageMargins.left, infoBoxStartY, infoBoxWidth, 70).fill(greyColor);
-            doc.fillColor(textColor).font('Helvetica-Bold').fontSize(10).text('Order Information', pageMargins.left + 10, infoBoxStartY + 10);
+            doc.roundedRect(pageMargins.left, infoBoxStartY, infoBoxWidth, infoBoxHeight, 10).fillAndStroke(greyColor, darkGreyColor);
+            doc.fillColor(textColor).font('Helvetica-Bold').fontSize(11).text('Order Information', pageMargins.left + infoBoxPadX, infoBoxStartY + infoBoxPadY - 2);
             doc.font('Helvetica').fontSize(9);
-            doc.text(`Order ID: ${order._id}`, pageMargins.left + 10, infoBoxStartY + 28, { lineGap: lineGap });
-            doc.text(`Order Date: ${formatDate(order.createdAt, 'MMM D, YYYY')}`, pageMargins.left + 10, infoBoxStartY + 42, { lineGap: lineGap });
-            doc.text(`Status: ${order.status || 'Pending'}`, pageMargins.left + 10, infoBoxStartY + 56, { lineGap: lineGap });
+            let y = infoBoxStartY + infoBoxPadY + 14;
+            doc.text(`Order ID: ${order._id}`, pageMargins.left + infoBoxPadX, y, { lineGap }); y += 13;
+            doc.text(`Order Date: ${formatDate(order.createdAt, 'MMM D, YYYY HH:mm')}`, pageMargins.left + infoBoxPadX, y, { lineGap }); y += 13;
+            doc.text(`Status: ${order.status || 'Pending'}`, pageMargins.left + infoBoxPadX, y, { lineGap }); y += 13;
+            doc.text(`Payment Method: ${order.paymentMethod || 'N/A'}`, pageMargins.left + infoBoxPadX, y, { lineGap }); y += 13;
+            doc.text(`Payment Status: ${order.paymentStatus || 'N/A'}`, pageMargins.left + infoBoxPadX, y, { lineGap });
 
             // Box 2: Customer Info
-            doc.rect(pageMargins.left + infoBoxWidth + 20, infoBoxStartY, infoBoxWidth, 70).fill(greyColor);
-            doc.fillColor(textColor).font('Helvetica-Bold').fontSize(10).text('Customer Information', pageMargins.left + infoBoxWidth + 30, infoBoxStartY + 10);
+            doc.roundedRect(pageMargins.left + infoBoxWidth + infoBoxGap, infoBoxStartY, infoBoxWidth, infoBoxHeight, 10).fillAndStroke(greyColor, darkGreyColor);
+            doc.fillColor(textColor).font('Helvetica-Bold').fontSize(11).text('Customer Information', pageMargins.left + infoBoxWidth + infoBoxGap + infoBoxPadX, infoBoxStartY + infoBoxPadY - 2);
             doc.font('Helvetica').fontSize(9);
-            doc.text(`Name: ${user.name || 'N/A'}`, pageMargins.left + infoBoxWidth + 30, infoBoxStartY + 28, { lineGap: lineGap });
-            doc.text(`Email: ${user.email || 'N/A'}`, pageMargins.left + infoBoxWidth + 30, infoBoxStartY + 42, { lineGap: lineGap });
-            currentY = infoBoxStartY + 80;
+            y = infoBoxStartY + infoBoxPadY + 14;
+            doc.text(`Name: ${user.name || (order.shippingInfo && order.shippingInfo.name) || 'N/A'}`, pageMargins.left + infoBoxWidth + infoBoxGap + infoBoxPadX, y, { lineGap }); y += 13;
+            doc.text(`Email: ${user.email || (order.shippingInfo && order.shippingInfo.email) || 'N/A'}`, pageMargins.left + infoBoxWidth + infoBoxGap + infoBoxPadX, y, { lineGap }); y += 13;
+            doc.text(`Phone: ${(order.shippingInfo && order.shippingInfo.phone) || user.phone || 'N/A'}`, pageMargins.left + infoBoxWidth + infoBoxGap + infoBoxPadX, y, { lineGap }); y += 13;
+            doc.text(`Shipping Address: ${(order.shippingInfo && order.shippingInfo.address) || user.address || 'N/A'}`, pageMargins.left + infoBoxWidth + infoBoxGap + infoBoxPadX, y, { lineGap, width: infoBoxWidth - 2 * infoBoxPadX });
+            currentY = infoBoxStartY + infoBoxHeight + 10;
 
             // --- Table Header ---
-            addNewPageIfNeeded(30);
+            addNewPageIfNeeded(32);
             const tableHeaderY = currentY;
-            doc.rect(pageMargins.left, tableHeaderY, contentWidth, 20).fill(darkGreyColor);
-            doc.fillColor(textColor).font('Helvetica-Bold').fontSize(9);
-            doc.text('Product', pageMargins.left + 10, tableHeaderY + 6, { width: contentWidth * 0.4 - 10 })
-               .text('Quantity', pageMargins.left + contentWidth * 0.4, tableHeaderY + 6, { width: contentWidth * 0.15, align: 'right' })
-               .text('Unit Price', pageMargins.left + contentWidth * 0.55, tableHeaderY + 6, { width: contentWidth * 0.2, align: 'right' })
-               .text('Total Price', pageMargins.left + contentWidth * 0.75, tableHeaderY + 6, { width: contentWidth * 0.25 - 10, align: 'right' });
-            currentY = tableHeaderY + 25;
+            doc.rect(pageMargins.left, tableHeaderY, contentWidth, 24).fill(darkGreyColor);
+            doc.fillColor(textColor).font('Helvetica-Bold').fontSize(10);
+            doc.text('Product', pageMargins.left + 12, tableHeaderY + 8, { width: contentWidth * 0.3 - 12 })
+               .text('SKU', pageMargins.left + contentWidth * 0.3, tableHeaderY + 8, { width: contentWidth * 0.15, align: 'left' })
+               .text('Quantity', pageMargins.left + contentWidth * 0.45, tableHeaderY + 8, { width: contentWidth * 0.12, align: 'right' })
+               .text('Unit Price', pageMargins.left + contentWidth * 0.57, tableHeaderY + 8, { width: contentWidth * 0.18, align: 'right' })
+               .text('Total Price', pageMargins.left + contentWidth * 0.75, tableHeaderY + 8, { width: contentWidth * 0.25 - 12, align: 'right' });
+            currentY = tableHeaderY + 26;
             doc.font('Helvetica');
 
             // --- Table Body ---
             let i = 0;
+            let subtotal = 0;
             order.items.forEach((item) => {
                 const productName = item.title || (item.product ? item.product.name : 'Unknown product');
+                const sku = item.sku || (item.product ? item.product.sku : '') || 'N/A';
                 const quantity = item.quantity || 1;
                 const price = item.price || 0;
                 const totalPrice = price * quantity;
-                
-                const productNameHeight = doc.fontSize(9).heightOfString(productName, { width: contentWidth * 0.4 - 10, lineGap: lineGap });
-                const itemHeight = productNameHeight + lineGap * 2.5;
-                
-                const rowNeededHeight = itemHeight + 5;
+                subtotal += totalPrice;
+
+                const productNameHeight = doc.fontSize(9).heightOfString(productName, { width: contentWidth * 0.3 - 12, lineGap });
+                const itemHeight = productNameHeight + lineGap * 3.5;
+                const rowNeededHeight = itemHeight + 4;
                 if (addNewPageIfNeeded(rowNeededHeight)) {
-                    // Vẽ lại header bảng trên trang mới
+                    // Draw table header again
                     const newTableHeaderY = currentY;
-                    doc.rect(pageMargins.left, newTableHeaderY, contentWidth, 20).fill(darkGreyColor);
-                    doc.fillColor(textColor).font('Helvetica-Bold').fontSize(9);
-                    doc.text('Product', pageMargins.left + 10, newTableHeaderY + 6, { width: contentWidth * 0.4 - 10 })
-                       .text('Quantity', pageMargins.left + contentWidth * 0.4, newTableHeaderY + 6, { width: contentWidth * 0.15, align: 'right' })
-                       .text('Unit Price', pageMargins.left + contentWidth * 0.55, newTableHeaderY + 6, { width: contentWidth * 0.2, align: 'right' })
-                       .text('Total Price', pageMargins.left + contentWidth * 0.75, newTableHeaderY + 6, { width: contentWidth * 0.25 - 10, align: 'right' });
-                    currentY = newTableHeaderY + 25;
+                    doc.rect(pageMargins.left, newTableHeaderY, contentWidth, 24).fill(darkGreyColor);
+                    doc.fillColor(textColor).font('Helvetica-Bold').fontSize(10);
+                    doc.text('Product', pageMargins.left + 12, newTableHeaderY + 8, { width: contentWidth * 0.3 - 12 })
+                       .text('SKU', pageMargins.left + contentWidth * 0.3, newTableHeaderY + 8, { width: contentWidth * 0.15, align: 'left' })
+                       .text('Quantity', pageMargins.left + contentWidth * 0.45, newTableHeaderY + 8, { width: contentWidth * 0.12, align: 'right' })
+                       .text('Unit Price', pageMargins.left + contentWidth * 0.57, newTableHeaderY + 8, { width: contentWidth * 0.18, align: 'right' })
+                       .text('Total Price', pageMargins.left + contentWidth * 0.75, newTableHeaderY + 8, { width: contentWidth * 0.25 - 12, align: 'right' });
+                    currentY = newTableHeaderY + 26;
                     doc.font('Helvetica');
                 }
-            
                 if (i % 2 !== 0) {
                      doc.rect(pageMargins.left, currentY, contentWidth, itemHeight).fill(greyColor);
                 }
-
-                const rowY = currentY + lineGap;
+                const rowY = currentY + lineGap + 2;
                 doc.fillColor(textColor).fontSize(9)
-                   .text(productName, pageMargins.left + 10, rowY, { width: contentWidth * 0.4 - 10, lineGap: lineGap })
-                   .text(quantity.toString(), pageMargins.left + contentWidth * 0.4, rowY, { width: contentWidth * 0.15, align: 'right' })
-                   .text(formatCurrency(price), pageMargins.left + contentWidth * 0.55, rowY, { width: contentWidth * 0.2, align: 'right' })
-                   .text(formatCurrency(totalPrice), pageMargins.left + contentWidth * 0.75, rowY, { width: contentWidth * 0.25 - 10, align: 'right' });
-
+                   .text(productName, pageMargins.left + 12, rowY, { width: contentWidth * 0.3 - 12, lineGap })
+                   .text(sku, pageMargins.left + contentWidth * 0.3, rowY, { width: contentWidth * 0.15, align: 'left' })
+                   .text(quantity.toString(), pageMargins.left + contentWidth * 0.45, rowY, { width: contentWidth * 0.12, align: 'right' })
+                   .text(formatCurrency(price), pageMargins.left + contentWidth * 0.57, rowY, { width: contentWidth * 0.18, align: 'right' })
+                   .text(formatCurrency(totalPrice), pageMargins.left + contentWidth * 0.75, rowY, { width: contentWidth * 0.25 - 12, align: 'right' });
                 currentY += itemHeight;
                 i++;
             });
 
-            // --- Total Summary ---
-            addNewPageIfNeeded(50);
-            currentY += 15;
-            const totalAmount = order.totalAmount || order.totalPrice || 
-                order.items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
-            
-            const totalBoxY = currentY;
-            const totalBoxHeight = 30;
-            doc.rect(pageMargins.left + contentWidth / 2, totalBoxY, contentWidth / 2, totalBoxHeight).fill(primaryColor);
-            doc.fillColor('#FFFFFF').font('Helvetica-Bold')
-                .fontSize(11)
-                .text('Total Amount:', pageMargins.left + contentWidth / 2 + 10, totalBoxY + 9)
-                .text(`${formatCurrency(totalAmount)}`, pageMargins.left + contentWidth * 0.75, totalBoxY + 9, { width: contentWidth * 0.25 - 10, align: 'right' });
-            currentY = totalBoxY + totalBoxHeight + 15;
-
-            // --- Payment Info & Notes ---
-            doc.font('Helvetica').fontSize(10).fillColor(textColor);
-            const paymentTitleHeight = 10 + lineGap * 2;
-            const paymentMethodHeight = doc.heightOfString(`Payment Method: ${order.paymentMethod || 'Unspecified'}`, { width: contentWidth/2 - 10, lineGap: lineGap });
-            const paymentStatusHeight = doc.heightOfString(`Payment Status: ${order.paymentStatus || 'Unpaid'}`, { width: contentWidth/2 - 10, lineGap: lineGap });
-            const paymentSectionHeight = paymentTitleHeight + paymentMethodHeight + paymentStatusHeight + lineGap * 2;
-            
-            let notesSectionHeight = 0;
-            let notesTextHeight = 0;
-            if (order.notes && order.notes.trim() !== '') { 
-                 const notesTitleHeight = 10 + lineGap * 2;
-                 notesTextHeight = doc.fontSize(10).heightOfString(order.notes, { width: contentWidth/2 - 10, lineGap: lineGap });
-                 notesSectionHeight = notesTitleHeight + notesTextHeight + lineGap;
-            }
-
-            const combinedHeight = Math.max(paymentSectionHeight, notesSectionHeight) + 10;
-            addNewPageIfNeeded(combinedHeight);
-
-            const paymentY = currentY;
-            doc.font('Helvetica-Bold').text('Payment Information', pageMargins.left, paymentY, { underline: true });
+            // --- Order Summary & Payment Info (dư không gian, box lớn hơn) ---
+            addNewPageIfNeeded(80);
+            currentY += 14;
+            const shippingFee = order.shippingFee || 0;
+            const discount = order.discount || 0;
+            const grandTotal = subtotal + shippingFee - discount;
+            const summaryBoxWidth = 260;
+            const summaryBoxX = pageMargins.left + contentWidth - summaryBoxWidth;
+            const summaryBoxY = currentY;
+            const summaryBoxHeight = 80;
+            // Order Summary box (phải)
+            doc.roundedRect(summaryBoxX, summaryBoxY, summaryBoxWidth, summaryBoxHeight, 12).fillAndStroke(primaryColor, primaryColor);
+            doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(11)
+                .text('Subtotal:', summaryBoxX + 22, summaryBoxY + 14)
+                .text(`${formatCurrency(subtotal)}`, summaryBoxX + 150, summaryBoxY + 14, { width: 90, align: 'right' })
+                .text('Shipping Fee:', summaryBoxX + 22, summaryBoxY + 32)
+                .text(`${formatCurrency(shippingFee)}`, summaryBoxX + 150, summaryBoxY + 32, { width: 90, align: 'right' })
+                .text('Discount:', summaryBoxX + 22, summaryBoxY + 50)
+                .text(`- ${formatCurrency(discount)}`, summaryBoxX + 150, summaryBoxY + 50, { width: 90, align: 'right' })
+                .text('Grand Total:', summaryBoxX + 22, summaryBoxY + 68)
+                .text(`${formatCurrency(grandTotal)}`, summaryBoxX + 150, summaryBoxY + 68, { width: 90, align: 'right' });
+            // Payment Info box (trái, box lớn hơn)
+            const paymentBoxX = pageMargins.left;
+            const paymentBoxY = summaryBoxY;
+            const paymentBoxWidth = summaryBoxX - pageMargins.left - 14 > 200 ? summaryBoxX - pageMargins.left - 14 : summaryBoxWidth;
+            const paymentBoxHeight = 80;
+            doc.roundedRect(paymentBoxX, paymentBoxY, paymentBoxWidth, paymentBoxHeight, 12).fillAndStroke(greyColor, darkGreyColor);
+            doc.font('Helvetica-Bold').fontSize(11).fillColor(textColor).text('Payment Information', paymentBoxX + 18, paymentBoxY + 14, { underline: true });
             doc.font('Helvetica').fontSize(9).fillColor(lightTextColor);
-            doc.text(`Method: ${order.paymentMethod || 'Unspecified'}`, pageMargins.left, paymentY + 15, { lineGap: lineGap });
-            doc.text(`Status: ${order.paymentStatus || 'Unpaid'}`, pageMargins.left, paymentY + 28, { lineGap: lineGap });
-
-            if (notesSectionHeight > 0) {
-                const notesX = pageMargins.left + contentWidth / 2 + 10;
-                const notesY = currentY;
-                doc.font('Helvetica-Bold').fontSize(10).fillColor(textColor).text('Notes', notesX, notesY, { underline: true });
+            doc.text(`Method: ${order.paymentMethod || 'N/A'}`, paymentBoxX + 18, paymentBoxY + 32, { lineGap });
+            doc.text(`Status: ${order.paymentStatus || 'N/A'}`, paymentBoxX + 18, paymentBoxY + 46, { lineGap });
+            let notesSectionHeight = 0;
+            if (order.notes && order.notes.trim() !== '') {
+                doc.font('Helvetica-Bold').fontSize(10).fillColor(textColor).text('Notes', paymentBoxX + 18, paymentBoxY + 62, { underline: true });
                 doc.font('Helvetica').fontSize(9).fillColor(lightTextColor);
-                doc.text(order.notes, notesX, notesY + 15, { width: contentWidth/2 - 20, lineGap: lineGap });
+                doc.text(order.notes, paymentBoxX + 18, paymentBoxY + 76, { width: paymentBoxWidth - 36, lineGap });
+                notesSectionHeight = 22;
             }
-
-            currentY += combinedHeight;
-
+            currentY = summaryBoxY + summaryBoxHeight + notesSectionHeight + 16;
             doc.end();
-
-            writeStream.on('finish', () => {
-                console.log('Order PDF write completed');
-                resolve(filePath);
-            });
+            writeStream.on('finish', () => resolve(filePath));
         } catch (error) {
-            console.error('Error generating order PDF:', error);
             reject(error);
         }
     });

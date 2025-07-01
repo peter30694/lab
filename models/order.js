@@ -337,6 +337,18 @@ class Order {
         const db = getDb();
         await db.collection('orders').deleteMany({ userId: userId });
     }
+
+    static async deleteManyBeforeDate(date) {
+        const db = getDb();
+        try {
+            if (!date) throw new Error('Date is required');
+            const result = await db.collection('orders').deleteMany({ createdAt: { $lt: date } });
+            return result;
+        } catch (error) {
+            console.error('❌ Lỗi khi xóa đơn hàng trước ngày:', error);
+            throw error;
+        }
+    }
 }
 
 module.exports = Order;

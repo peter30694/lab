@@ -132,6 +132,18 @@ exports.getIndex = async (req, res, next) => {
         const allProducts = await Product.find();
         const products = allProducts.slice(0, 8);
 
+        let cartCount = 0;
+        if (req.session.user && req.session.user._id) {
+            const userData = await User.findById(req.session.user._id);
+            if (userData && userData.cart && Array.isArray(userData.cart.items)) {
+                cartCount = userData.cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            }
+        }
+        let signupSuccess = false;
+        if (req.session.signupSuccess) {
+            signupSuccess = true;
+            delete req.session.signupSuccess;
+        }
         res.render('shop/index', {
             products: products,
             pageTitle: 'PetShop - Cửa hàng thú cưng',
@@ -141,7 +153,9 @@ exports.getIndex = async (req, res, next) => {
             productCSS: true,
             isAuthenticated: req.session.user ? true : false,
             isAdmin: req.session.user && req.session.user.role === 'admin',
-            user: req.session.user || null
+            user: req.session.user || null,
+            cartCount,
+            signupSuccess
         });
     } catch (err) {
         console.log(err);

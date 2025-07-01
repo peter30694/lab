@@ -1,4 +1,4 @@
-// Main JavaScript for PetShop
+// Main JavaScript for Phương Store
 
 document.addEventListener('DOMContentLoaded', function() {
     // Legacy mobile menu (keep for backward compatibility)

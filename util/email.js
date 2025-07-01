@@ -183,9 +183,53 @@ const sendNewOrderNotification = async (order, user) => {
     }
 };
 
+// Gửi email thông báo đổi mật khẩu
+const sendPasswordChangeNotification = async (user) => {
+    try {
+        const mailOptionsUser = {
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Thông báo đổi mật khẩu - Phương Store',
+            html: `
+                <h1>Xin chào ${user.name || 'bạn'}!</h1>
+                <p>Bạn vừa thay đổi mật khẩu tài khoản tại Phương Store.</p>
+                <p>Nếu bạn không thực hiện thao tác này, vui lòng liên hệ ngay với quản trị viên.</p>
+                <p>Trân trọng,<br>Phương Store</p>
+            `
+        };
+        const mailOptionsAdmin = {
+            from: process.env.EMAIL_USER,
+            to: process.env.ADMIN_EMAIL,
+            subject: `Admin Alert: Người dùng ${user.email} vừa đổi mật khẩu`,
+            html: `
+                <h1>Thông báo đổi mật khẩu</h1>
+                <p>Người dùng <strong>${user.name || user.email}</strong> (${user.email}) vừa thay đổi mật khẩu vào lúc ${new Date().toLocaleString('vi-VN')}.</p>
+                <p>Nếu đây không phải là bạn, vui lòng kiểm tra lại hệ thống.</p>
+            `
+        };
+        await transporter.sendMail(mailOptionsUser);
+        await transporter.sendMail(mailOptionsAdmin);
+        return true;
+    } catch (error) {
+        console.error('❌ Lỗi khi gửi email thông báo đổi mật khẩu:', error);
+        return false;
+    }
+};
+
+// Gửi email xác nhận đăng ký
+const sendSignupConfirmation = async function(user) {
+    const subject = 'Xác nhận đăng ký tài khoản Phương Store';
+    const html = `<p>Xin chào <b>${user.name}</b>,</p>
+        <p>Bạn đã đăng ký tài khoản thành công tại Phương Store với email: <b>${user.email}</b>.</p>
+        <p>Chúc bạn có trải nghiệm tuyệt vời tại cửa hàng của chúng tôi!</p>`;
+    return sendMail(user.email, subject, html);
+};
+
 // Xuất module
 module.exports = {
     sendOrderConfirmation,
     sendPasswordReset,
-    sendNewOrderNotification
+    sendNewOrderNotification,
+    sendPasswordChangeNotification,
+    sendSignupConfirmation
 };

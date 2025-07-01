@@ -245,7 +245,11 @@
                 </div>
                 <div class="meta-item">
                     <div class="meta-label">Tổng tiền</div>
-                    <div class="meta-value"><strong><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</strong></div>
+                    <div class="meta-value">
+                        <strong>
+                            <%= typeof order.totalPrice === 'number' ? order.totalPrice.toLocaleString('vi-VN') + ' VNĐ' : 'N/A' %>
+                        </strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -275,13 +279,15 @@
                 <h3 class="section-title">Thông tin thanh toán</h3>
                 <div class="info-row">
                     <span class="info-label">Phương thức:</span>
-                    <span class="info-value"><%= order.getPaymentMethodDisplay() %></span>
+                    <span class="info-value">
+                        <%= order.paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : (order.paymentMethod === 'vnpay' ? 'Thanh toán qua VNPAY' : 'Khác') %>
+                    </span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Trạng thái thanh toán:</span>
                     <span class="info-value">
                         <span class="payment-badge payment-<%= order.paymentStatus %>">
-                            <%= order.getPaymentStatusDisplay() %>
+                            <%= order.paymentStatus === 'paid' ? 'Đã thanh toán' : (order.paymentStatus === 'pending' ? 'Chờ thanh toán' : (order.paymentStatus === 'failed' ? 'Thanh toán thất bại' : 'Không xác định')) %>
                         </span>
                     </span>
                 </div>
@@ -289,7 +295,7 @@
                     <span class="info-label">Trạng thái đơn hàng:</span>
                     <span class="info-value">
                         <span class="status-badge status-<%= order.status %>">
-                            <%= order.getStatusDisplay() %>
+                            <%= order.status === 'pending' ? 'Chờ xử lý' : (order.status === 'processing' ? 'Đang xử lý' : (order.status === 'shipped' ? 'Đã giao cho đơn vị vận chuyển' : (order.status === 'delivered' ? 'Đã giao hàng' : (order.status === 'cancelled' ? 'Đã hủy' : 'Không xác định')))) %>
                         </span>
                     </span>
                 </div>
@@ -378,7 +384,7 @@
             
             <div class="action-group">
                 <a href="/admin/orders" class="btn btn-secondary">Quay lại danh sách</a>
-                <a href="/orders/<%= order._id %>/invoice" class="btn btn-primary" target="_blank">Tải hóa đơn</a>
+                <a href="/admin/orders/<%= order._id %>/invoice" class="btn btn-primary" target="_blank">Tải hóa đơn</a>
             </div>
         </div>
     </main>

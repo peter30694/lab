@@ -44,5 +44,8 @@ router.post('/update-order-status', isAuth, isAdmin, adminController.postUpdateO
 // Route cập nhật trạng thái thanh toán
 router.post('/update-payment-status', isAuth, isAdmin, adminController.postUpdatePaymentStatus);
 
+// Route tải hóa đơn
+router.get('/orders/:orderId/invoice', isAuth, isAdmin, adminController.getDownloadInvoice);
+
 module.exports = router;
 

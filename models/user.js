@@ -242,6 +242,41 @@ class User {
             throw err;
         }
     }
+
+    static async updateName(userId, newName) {
+        const db = getDb();
+        try {
+            return await db.collection('users').updateOne(
+                { _id: new mongodb.ObjectId(userId) },
+                { $set: { name: newName, updatedAt: new Date() } }
+            );
+        } catch (err) {
+            console.error('Lỗi khi cập nhật tên user:', err);
+            throw err;
+        }
+    }
+
+    static async create({ name, email, password, phone, address, role = 'user' }) {
+        const db = getDb();
+        const user = {
+            name,
+            email,
+            password,
+            phone,
+            address,
+            role,
+            createdAt: new Date(),
+            cart: { items: [], totalPrice: 0 }
+        };
+        try {
+            const result = await db.collection('users').insertOne(user);
+            user._id = result.insertedId;
+            return user;
+        } catch (err) {
+            console.error('Lỗi khi tạo user:', err);
+            throw err;
+        }
+    }
 }
 
 module.exports = User;

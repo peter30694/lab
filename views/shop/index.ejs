@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetShop - Cửa hàng thú cưng</title>
+    <title>Phương Store - Cửa hàng thú cưng</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,13 +41,13 @@
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
-    <%- include('../partials/header') %>
+    <%- include('../includes/navigation', { user, isAdmin, isAuthenticated, path, cartCount }) %>
 
 <!-- Hero Section -->
 <section class="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-5xl font-bold mb-6 fade-in">Chào mừng đến với PetShop</h1>
+            <h1 class="text-5xl font-bold mb-6 fade-in">Chào mừng đến với Phương Store</h1>
             <p class="text-xl mb-8 opacity-90">Nơi yêu thương và chăm sóc tốt nhất cho những người bạn bốn chân của bạn</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="/products" class="btn-primary px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
@@ -156,7 +156,7 @@
 <section class="py-16 bg-gray-50">
     <div class="container mx-auto px-4">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">Tại sao chọn PetShop?</h2>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Tại sao chọn Phương Store?</h2>
             <p class="text-gray-600 max-w-2xl mx-auto">Chúng tôi cam kết mang đến dịch vụ tốt nhất cho thú cưng của bạn</p>
         </div>
         
@@ -204,6 +204,18 @@
         </div>
     </div>
 </section>
+
+<% if (typeof signupSuccess !== 'undefined' && signupSuccess) { %>
+  <div id="signup-success-popup" class="fixed inset-0 flex items-center justify-center z-50">
+    <div class="bg-white border border-green-400 rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
+      <div class="text-green-600 text-3xl mb-2"><i class="ri-checkbox-circle-line"></i></div>
+      <div class="text-lg font-semibold mb-2">Đăng ký thành công!</div>
+      <div class="text-gray-600 mb-4">Chào mừng bạn đến với Phương Store. Hãy kiểm tra email để xác nhận tài khoản.</div>
+      <button onclick="document.getElementById('signup-success-popup').remove()" class="mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">Đóng</button>
+    </div>
+    <div class="fixed inset-0 bg-black opacity-30"></div>
+  </div>
+<% } %>
 
 <script>
 // Initialize any page-specific functionality

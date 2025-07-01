@@ -10,12 +10,11 @@
             
             <!-- Desktop Navigation -->
             <div class="hidden md:flex items-center space-x-8">
-                <a href="/" class="text-gray-700 hover:text-primary transition-colors <%= path === '/' ? 'text-primary font-semibold' : '' %>">
-                    <i class="ri-home-line"></i> Trang chủ
-                </a>
-                <a href="/products" class="text-gray-700 hover:text-primary transition-colors <%= path === '/products' ? 'text-primary font-semibold' : '' %>">
-                    <i class="ri-store-line"></i> Sản phẩm
-                </a>
+                <a href="/" class="text-gray-700 hover:text-primary transition-colors <%= path === '/' ? 'text-primary font-semibold' : '' %>"><i class="ri-home-line"></i> Trang chủ</a>
+                <a href="/products" class="text-gray-700 hover:text-primary transition-colors <%= path === '/products' ? 'text-primary font-semibold' : '' %>"><i class="ri-store-line"></i> Sản phẩm</a>
+                <a href="/categories" class="text-gray-700 hover:text-primary transition-colors <%= path === '/categories' ? 'text-primary font-semibold' : '' %>"><i class="ri-list-unordered"></i> Danh mục</a>
+                <a href="/about" class="text-gray-700 hover:text-primary transition-colors <%= path === '/about' ? 'text-primary font-semibold' : '' %>"><i class="ri-information-line"></i> Giới thiệu</a>
+                <a href="/contact" class="text-gray-700 hover:text-primary transition-colors <%= path === '/contact' ? 'text-primary font-semibold' : '' %>"><i class="ri-contacts-line"></i> Liên hệ</a>
             </div>
 
             <!-- User Actions -->
@@ -46,17 +45,17 @@
                                 <i class="ri-user-circle-line"></i> <%= user ? user.email : '' %>
                             </div>
                             <% if (isAdmin === true) { %>
-                                <a href="/admin/add-product" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/add-product' ? 'bg-blue-50 text-primary' : '' %>">
-                                    <i class="ri-add-circle-line"></i> Thêm sản phẩm
-                                </a>
-                                <a href="/admin/products" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/products' ? 'bg-blue-50 text-primary' : '' %>">
-                                    <i class="ri-list-check"></i> Quản lý sản phẩm
-                                </a>
-                                <a href="/admin/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/orders' ? 'bg-blue-50 text-primary' : '' %>">
-                                    <i class="ri-shopping-bag-line"></i> Quản lý đơn hàng
-                                </a>
+                                <a href="/admin/add-product" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/add-product' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-add-circle-line"></i> Thêm sản phẩm</a>
+                                <a href="/admin/products" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/products' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-list-check"></i> Quản lý sản phẩm</a>
+                                <a href="/admin/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/admin/orders' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-shopping-bag-line"></i> Quản lý đơn hàng</a>
                                 <div class="border-t my-1"></div>
                             <% } %>
+                            <a href="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/profile' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-user-settings-line"></i> Thông tin cá nhân</a>
+                            <% if (!isAdmin) { %>
+                            <a href="/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/orders' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-box-line mr-2"></i> Đơn hàng của tôi</a>
+                            <% } %>
+                            <a href="/profile/change-password" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/profile/change-password' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-lock-password-line"></i> Đổi mật khẩu</a>
+                            <div class="border-t my-1"></div>
                             <form action="/logout" method="POST" class="block">
                                 <button type="submit" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50">
                                     <i class="ri-logout-box-line"></i> Đăng xuất
@@ -80,12 +79,11 @@
         <!-- Mobile Navigation -->
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="py-4 space-y-2">
-                <a href="/" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/' ? 'bg-blue-50 text-primary' : '' %>">
-                    <i class="ri-home-line"></i> Trang chủ
-                </a>
-                <a href="/products" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/products' ? 'bg-blue-50 text-primary' : '' %>">
-                    <i class="ri-store-line"></i> Sản phẩm
-                </a>
+                <a href="/" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-home-line"></i> Trang chủ</a>
+                <a href="/products" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/products' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-store-line"></i> Sản phẩm</a>
+                <a href="/categories" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/categories' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-list-unordered"></i> Danh mục</a>
+                <a href="/about" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/about' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-information-line"></i> Giới thiệu</a>
+                <a href="/contact" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/contact' ? 'bg-blue-50 text-primary' : '' %>"><i class="ri-contacts-line"></i> Liên hệ</a>
                 <% if (isAuthenticated) { %>
                     <a href="/cart" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 <%= path === '/cart' ? 'bg-blue-50 text-primary' : '' %>">
                         <i class="ri-shopping-cart-line"></i> Giỏ hàng

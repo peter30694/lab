@@ -1,0 +1,30 @@
+<%- include('./includes/head.ejs') %>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <%- include('./includes/navigation.ejs') %>
+    <main class="max-w-2xl mx-auto px-4 py-10">
+        <div class="bg-white rounded-xl shadow p-8 flex flex-col items-center gap-6">
+            <div class="flex flex-col items-center gap-2">
+                <img src="<%= user.avatarUrl || '/images/default-profile.png' %>" alt="Avatar" class="w-24 h-24 rounded-full object-cover shadow">
+                <h2 class="text-2xl font-bold text-blue-700 mt-2"><%= user.name || 'Người dùng' %></h2>
+                <p class="text-gray-500"><i class="ri-mail-line"></i> <%= user.email %></p>
+            </div>
+            <div class="w-full flex flex-col gap-4 mt-6">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-700 font-medium">Tên:</span>
+                    <span class="text-gray-900"><%= user.name %></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-700 font-medium">Email:</span>
+                    <span class="text-gray-900"><%= user.email %></span>
+                </div>
+                <!-- Có thể bổ sung thêm các trường thông tin khác ở đây -->
+            </div>
+            <div class="flex gap-4 mt-8">
+                <a href="/profile/edit" class="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition flex items-center gap-2">
+                    <i class="ri-edit-line"></i> Chỉnh sửa thông tin
+                </a>
+            </div>
+        </div>
+    </main>
+    <%- include('./includes/end.ejs') %> 
