@@ -49,6 +49,10 @@
                                                             Ngày đặt: <%= new Date(order.createdAt).toLocaleDateString('vi-VN', {
                                                                 year: 'numeric' , month: 'long' , day: 'numeric' }) %>
                                                         </p>
+                                                        <p class="text-sm text-gray-600 flex items-center mt-1">
+                                                            <i class="ri-mail-line mr-1"></i>
+                                                            Email: <%= order.shippingInfo && order.shippingInfo.email ? order.shippingInfo.email : (user && user.email ? user.email : 'N/A') %>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>

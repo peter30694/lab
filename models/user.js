@@ -256,6 +256,19 @@ class User {
         }
     }
 
+    static async updatePassword(userId, newPassword) {
+        const db = getDb();
+        try {
+            return await db.collection('users').updateOne(
+                { _id: new mongodb.ObjectId(userId) },
+                { $set: { password: newPassword, updatedAt: new Date() } }
+            );
+        } catch (err) {
+            console.error('Lỗi khi cập nhật mật khẩu user:', err);
+            throw err;
+        }
+    }
+
     static async create({ name, email, password, phone, address, role = 'user' }) {
         const db = getDb();
         const user = {
