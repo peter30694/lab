@@ -47,5 +47,16 @@ router.post('/update-payment-status', isAuth, isAdmin, adminController.postUpdat
 // Route tải hóa đơn
 router.get('/orders/:orderId/invoice', isAuth, isAdmin, adminController.getDownloadInvoice);
 
+// Route GET /admin/dashboard
+router.get('/dashboard', isAuth, isAdmin, (req, res) => {
+  res.render('admin/dashboard', {
+    path: '/admin/dashboard',
+    pageTitle: 'Admin Dashboard',
+    isAuthenticated: true,
+    isAdmin: true,
+    user: req.session.user
+  });
+});
+
 module.exports = router;
 

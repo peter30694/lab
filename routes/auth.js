@@ -39,6 +39,9 @@ router.post('/login', async (req, res, next) => {
         req.session.user = user;
         await req.session.save();
         console.log('User logged in:', user);
+        if(user.role === 'admin') {
+          return res.redirect('/admin/dashboard');
+        }
         res.redirect('/');
     } catch (err) {
         console.error(err);

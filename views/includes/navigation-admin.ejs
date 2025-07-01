@@ -1,0 +1,53 @@
+<%- include('head.ejs') %>
+<nav class="bg-blue-900 text-white shadow-sm sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <div class="flex items-center gap-2">
+        <a href="/admin/dashboard" class="text-2xl font-pacifico font-bold text-white flex items-center gap-2">
+          <i class="ri-store-2-line text-3xl"></i> <span>Admin Panel</span>
+        </a>
+      </div>
+      <!-- Admin Navigation -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="/admin/dashboard" class="hover:text-yellow-300 transition-colors flex items-center gap-1 <%= path === '/admin/dashboard' ? 'text-yellow-300 font-semibold' : '' %>"><i class="ri-dashboard-line"></i> Dashboard</a>
+        <a href="/admin/products" class="hover:text-yellow-300 transition-colors flex items-center gap-1 <%= path === '/admin/products' ? 'text-yellow-300 font-semibold' : '' %>"><i class="ri-list-check"></i> Sản phẩm</a>
+        <a href="/admin/orders" class="hover:text-yellow-300 transition-colors flex items-center gap-1 <%= path === '/admin/orders' ? 'text-yellow-300 font-semibold' : '' %>"><i class="ri-shopping-bag-line"></i> Đơn hàng</a>
+        <a href="/admin/accounts" class="hover:text-yellow-300 transition-colors flex items-center gap-1 <%= path === '/admin/accounts' ? 'text-yellow-300 font-semibold' : '' %>"><i class="ri-user-settings-line"></i> Tài khoản</a>
+      </div>
+      <!-- Logout -->
+      <form action="/logout" method="POST" class="ml-4">
+        <button type="submit" class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition flex items-center gap-2">
+          <i class="ri-logout-box-line"></i> Đăng xuất
+        </button>
+      </form>
+      <!-- Mobile menu button -->
+      <button class="md:hidden p-2" id="admin-mobile-menu-btn">
+        <i class="ri-menu-line text-2xl"></i>
+      </button>
+    </div>
+    <!-- Mobile Navigation -->
+    <div class="md:hidden hidden" id="admin-mobile-menu">
+      <div class="py-4 space-y-2">
+        <a href="/admin/dashboard" class="block px-4 py-2 hover:bg-blue-800 rounded <%= path === '/admin/dashboard' ? 'bg-blue-800 text-yellow-300' : '' %>"><i class="ri-dashboard-line"></i> Dashboard</a>
+        <a href="/admin/products" class="block px-4 py-2 hover:bg-blue-800 rounded <%= path === '/admin/products' ? 'bg-blue-800 text-yellow-300' : '' %>"><i class="ri-list-check"></i> Sản phẩm</a>
+        <a href="/admin/orders" class="block px-4 py-2 hover:bg-blue-800 rounded <%= path === '/admin/orders' ? 'bg-blue-800 text-yellow-300' : '' %>"><i class="ri-shopping-bag-line"></i> Đơn hàng</a>
+        <a href="/admin/accounts" class="block px-4 py-2 hover:bg-blue-800 rounded <%= path === '/admin/accounts' ? 'bg-blue-800 text-yellow-300' : '' %>"><i class="ri-user-settings-line"></i> Tài khoản</a>
+        <form action="/logout" method="POST" class="block px-4 py-2">
+          <button type="submit" class="w-full text-left text-red-400 hover:text-red-600 flex items-center gap-2"><i class="ri-logout-box-line"></i> Đăng xuất</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('admin-mobile-menu-btn');
+  const menu = document.getElementById('admin-mobile-menu');
+  if(btn && menu) {
+    btn.addEventListener('click', function() {
+      menu.classList.toggle('hidden');
+    });
+  }
+});
+</script> 
